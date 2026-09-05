@@ -96,27 +96,66 @@ export default function App() {
     }
   };
 
+  const connectLocalTestWallet = async () => {
+    setIsConnecting(true);
+    setError("");
+    try {
+      // Hardhat standard Account #0 with 10,000 ETH
+      const localProvider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
+      const localSigner = new ethers.Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", localProvider);
+      const address = await localSigner.getAddress();
+      setProvider(localProvider);
+      setSigner(localSigner);
+      setAccount(address);
+      setChainId("0x7a69");
+    } catch (err) {
+      console.error("Local test wallet error:", err);
+      setError("Failed to connect to local Hardhat node at http://127.0.0.1:8545. Make sure 'npx hardhat node' is running.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   const connectWallet = async () => {
     if (!window.ethereum) {
-      setError("MetaMask or compatible Web3 wallet not detected.");
+      // If MetaMask is missing or broken, fallback to local test wallet automatically
+      connectLocalTestWallet();
       return;
     }
     setIsConnecting(true);
     setError("");
 
     try {
-      await switchToLocalhostNetwork();
+      // 1. Request account access from MetaMask
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No Ethereum account selected in MetaMask.");
+      }
+
       const browserProvider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await browserProvider.send("eth_requestAccounts", []);
       const userSigner = await browserProvider.getSigner();
-      const network = await browserProvider.getNetwork();
+      const currentNetwork = await browserProvider.getNetwork();
+      const currentChainHex = "0x" + currentNetwork.chainId.toString(16);
 
       setProvider(browserProvider);
       setSigner(userSigner);
       setAccount(accounts[0]);
-      setChainId("0x" + network.chainId.toString(16));
+      setChainId(currentChainHex);
+
+      // 2. Prompt switch to localhost if on mainnet/wrong network
+      if (currentChainHex !== "0x7a69" && currentChainHex !== "0xaa36a7") {
+        await switchToLocalhostNetwork();
+      }
     } catch (err) {
-      setError(err.message || "Failed to connect wallet.");
+      console.error("Wallet connection error:", err);
+      if (err.code === -32002) {
+        setError("MetaMask is currently busy or locked. You can click 'Use Built-in Test Wallet' below to test instantly!");
+      } else if (err.code === 4001) {
+        setError("Connection request rejected. Please approve the MetaMask prompt to proceed.");
+      } else {
+        setError(err.message || "Failed to connect wallet.");
+      }
     } finally {
       setIsConnecting(false);
     }
@@ -124,24 +163,58 @@ export default function App() {
 
   useEffect(() => {
     if (window.ethereum) {
+      // Auto-check already connected accounts on page load
+      window.ethereum.request({ method: "eth_accounts" }).then(async (accounts) => {
+        if (accounts && accounts.length > 0) {
+          try {
+            const browserProvider = new ethers.BrowserProvider(window.ethereum);
+            const userSigner = await browserProvider.getSigner();
+            const network = await browserProvider.getNetwork();
+            setProvider(browserProvider);
+            setSigner(userSigner);
+            setAccount(accounts[0]);
+            setChainId("0x" + network.chainId.toString(16));
+          } catch (e) {
+            console.warn("Auto-connect initialization skipped:", e);
+          }
+        }
+      });
+
       window.ethereum.request({ method: "eth_chainId" }).then((id) => setChainId(id));
-      window.ethereum.on("accountsChanged", async (accounts) => {
-        if (accounts.length > 0) {
-          const browserProvider = new ethers.BrowserProvider(window.ethereum);
-          const userSigner = await browserProvider.getSigner();
-          const network = await browserProvider.getNetwork();
-          setProvider(browserProvider);
-          setSigner(userSigner);
-          setAccount(accounts[0]);
-          setChainId("0x" + network.chainId.toString(16));
+
+      const handleAccountsChanged = async (accounts) => {
+        if (accounts && accounts.length > 0) {
+          try {
+            const browserProvider = new ethers.BrowserProvider(window.ethereum);
+            const userSigner = await browserProvider.getSigner();
+            const network = await browserProvider.getNetwork();
+            setProvider(browserProvider);
+            setSigner(userSigner);
+            setAccount(accounts[0]);
+            setChainId("0x" + network.chainId.toString(16));
+            setError("");
+          } catch (e) {
+            console.error(e);
+          }
         } else {
           setAccount("");
           setSigner(null);
+          setProvider(null);
         }
-      });
-      window.ethereum.on("chainChanged", (newChainId) => {
+      };
+
+      const handleChainChanged = (newChainId) => {
         setChainId(newChainId);
-      });
+        window.location.reload();
+      };
+
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+      window.ethereum.on("chainChanged", handleChainChanged);
+
+      return () => {
+        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+        window.ethereum.removeListener("chainChanged", handleChainChanged);
+      };
     }
   }, []);
 
@@ -218,6 +291,7 @@ export default function App() {
       <WalletConnect
         account={account}
         onConnect={connectWallet}
+        onConnectTestWallet={connectLocalTestWallet}
         isConnecting={isConnecting}
         error={error}
         chainId={chainId}
@@ -263,7 +337,7 @@ export default function App() {
           <UploadFile
             signer={signer}
             userKeys={userKeys}
-            onConnectWallet={connectWallet}
+            onConnectWallet={connectLocalTestWallet}
           />
         )}
         {activeTab === 'myfiles' && (

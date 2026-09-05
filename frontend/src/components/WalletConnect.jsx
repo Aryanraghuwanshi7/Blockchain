@@ -1,7 +1,7 @@
 import React from 'react';
 import { Wallet, ShieldCheck, AlertCircle } from 'lucide-react';
 
-export default function WalletConnect({ account, onConnect, isConnecting, error, chainId, onSwitchNetwork }) {
+export default function WalletConnect({ account, onConnect, onConnectTestWallet, isConnecting, error, chainId, onSwitchNetwork }) {
   const isLocalOrSepolia = chainId === "0x7a69" || chainId === "0xaa36a7" || chainId === "31337" || chainId === "11155111";
 
   return (
@@ -18,13 +18,13 @@ export default function WalletConnect({ account, onConnect, isConnecting, error,
                 <ShieldCheck className="w-4 h-4 inline" /> {account.substring(0, 6)}...{account.substring(account.length - 4)}
               </span>
             ) : (
-              "Connect MetaMask to manage files and execute cryptographic access control"
+              "Connect MetaMask or use the built-in 10,000 ETH test account"
             )}
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         {account && !isLocalOrSepolia && (
           <button
             onClick={onSwitchNetwork}
@@ -39,13 +39,22 @@ export default function WalletConnect({ account, onConnect, isConnecting, error,
             {isLocalOrSepolia ? "Connected (Local 31337)" : "Wrong Network (Mainnet)"}
           </div>
         ) : (
-          <button
-            onClick={onConnect}
-            disabled={isConnecting}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2"
-          >
-            {isConnecting ? "Connecting..." : "Connect Wallet"}
-          </button>
+          <>
+            <button
+              onClick={onConnect}
+              disabled={isConnecting}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            >
+              Connect MetaMask
+            </button>
+            <button
+              onClick={onConnectTestWallet}
+              disabled={isConnecting}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+            >
+              ⚡ Instant Test Account (10k ETH)
+            </button>
+          </>
         )}
       </div>
 
