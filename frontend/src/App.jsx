@@ -260,7 +260,11 @@ export default function App() {
         </div>
 
         {activeTab === 'upload' && (
-          <UploadFile signer={signer} userKeys={userKeys} />
+          <UploadFile
+            signer={signer}
+            userKeys={userKeys}
+            onConnectWallet={connectWallet}
+          />
         )}
         {activeTab === 'myfiles' && (
           <MyFiles signer={signer} account={account} userKeys={userKeys} />

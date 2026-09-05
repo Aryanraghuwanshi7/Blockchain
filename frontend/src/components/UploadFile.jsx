@@ -5,7 +5,7 @@ import { generateAESKey, encryptFile, wrapKeyForRecipient } from '../utils/crypt
 import { uploadToIPFS } from '../utils/ipfs';
 import { getFileRegistryContract } from '../utils/contracts';
 
-export default function UploadFile({ signer, userKeys, onFileUploaded }) {
+export default function UploadFile({ signer, userKeys, onFileUploaded, onConnectWallet }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,7 +20,11 @@ export default function UploadFile({ signer, userKeys, onFileUploaded }) {
   };
 
   const handleUpload = async () => {
-    if (!file || !signer || !userKeys) return;
+    if (!signer) {
+      if (onConnectWallet) onConnectWallet();
+      return;
+    }
+    if (!file || !userKeys) return;
     setIsProcessing(true);
     setStatus('Reading and encrypting file client-side (AES-256-GCM)...');
 
@@ -102,13 +106,43 @@ export default function UploadFile({ signer, userKeys, onFileUploaded }) {
           </label>
         </div>
 
+        {!signer && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center justify-between">
+            <span>⚠️ Ethereum Web3 Wallet is not connected.</span>
+            <button
+              onClick={onConnectWallet}
+              className="font-bold underline hover:text-amber-900 ml-2"
+            >
+              Connect Wallet Now
+            </button>
+          </div>
+        )}
+
         <button
           onClick={handleUpload}
-          disabled={!file || isProcessing || !signer}
-          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2"
+          disabled={isProcessing || (!signer && !onConnectWallet)}
+          className={`w-full py-3 text-white font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 ${
+            !signer
+              ? 'bg-amber-600 hover:bg-amber-700'
+              : !file
+              ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              : 'bg-indigo-600 hover:bg-indigo-700'
+          }`}
         >
-          {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-          {isProcessing ? 'Processing...' : 'Encrypt & Register on BlockDrive'}
+          {isProcessing ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : !signer ? (
+            <UploadCloud className="w-4 h-4" />
+          ) : (
+            <UploadCloud className="w-4 h-4" />
+          )}
+          {isProcessing
+            ? 'Processing...'
+            : !signer
+            ? 'Connect Wallet to Encrypt & Register'
+            : !file
+            ? 'Select a File to Upload'
+            : 'Encrypt & Register on BlockDrive'}
         </button>
 
         {status && (
