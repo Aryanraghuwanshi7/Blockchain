@@ -5,6 +5,7 @@ import { supabase } from './utils/supabaseClient';
 import WalletConnect from './components/WalletConnect';
 import UploadFile from './components/UploadFile';
 import MyFiles from './components/MyFiles';
+import SharedFiles from './components/SharedFiles';
 import RequestAccessDecrypt from './components/RequestAccessDecrypt';
 import AuthModal from './components/AuthModal';
 
@@ -300,10 +301,10 @@ export default function App() {
 
       {/* Main Content Tabs */}
       <div className="space-y-4">
-        <div className="flex border-b border-slate-200 gap-4">
+        <div className="flex border-b border-slate-200 gap-4 overflow-x-auto">
           <button
             onClick={() => setActiveTab('upload')}
-            className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${
               activeTab === 'upload'
                 ? 'border-indigo-600 text-indigo-600'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -313,7 +314,7 @@ export default function App() {
           </button>
           <button
             onClick={() => setActiveTab('myfiles')}
-            className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${
               activeTab === 'myfiles'
                 ? 'border-indigo-600 text-indigo-600'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -322,14 +323,24 @@ export default function App() {
             My Files & Access
           </button>
           <button
+            onClick={() => setActiveTab('shared')}
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${
+              activeTab === 'shared'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Shared With Me
+          </button>
+          <button
             onClick={() => setActiveTab('decrypt')}
-            className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${
               activeTab === 'decrypt'
                 ? 'border-indigo-600 text-indigo-600'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Decrypt & Download
+            Manual Decrypt
           </button>
         </div>
 
@@ -342,6 +353,9 @@ export default function App() {
         )}
         {activeTab === 'myfiles' && (
           <MyFiles signer={signer} account={account} userKeys={userKeys} />
+        )}
+        {activeTab === 'shared' && (
+          <SharedFiles signer={signer} account={account} userKeys={userKeys} />
         )}
         {activeTab === 'decrypt' && (
           <RequestAccessDecrypt signer={signer} userKeys={userKeys} />

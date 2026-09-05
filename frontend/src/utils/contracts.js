@@ -4,10 +4,15 @@ export const FILE_REGISTRY_ABI = [
   "function registerFile(bytes32 fileId, string calldata ipfsCid, bytes calldata ownerWrappedKey) external",
   "function getFileRecord(bytes32 fileId) external view returns (string memory ipfsCid, address ownerAddress, uint256 createdAt, bytes memory callerWrappedKey)",
   "function addAuthorizedRecipient(bytes32 fileId, address recipient, bytes calldata wrappedKey) external",
+  "function revokeRecipient(bytes32 fileId, address recipient) external",
   "function isAuthorized(address user, bytes32 fileId) external view returns (bool)",
+  "function getFileRecipients(bytes32 fileId) external view returns (address[] memory)",
   "function getFilesByOwner(address owner) external view returns (bytes32[] memory)",
+  "function getFilesSharedWithUser(address user) external view returns (bytes32[] memory)",
+  "function getAccessibleFilesFromOwner(address owner, address viewer) external view returns (bytes32[] memory)",
   "event FileRegistered(bytes32 indexed fileId, address indexed owner, string ipfsCid, uint256 createdAt)",
-  "event RecipientAuthorized(bytes32 indexed fileId, address indexed recipient, address indexed authorizedBy)"
+  "event RecipientAuthorized(bytes32 indexed fileId, address indexed recipient, address indexed authorizedBy)",
+  "event RecipientRevoked(bytes32 indexed fileId, address indexed recipient, address indexed revokedBy)"
 ];
 
 export const ACCESS_CONTROL_ABI = [

@@ -28,8 +28,14 @@ contract FileRegistry {
     // fileId => (recipientAddress => isAuthorized)
     mapping(bytes32 => mapping(address => bool)) private _authorizations;
 
+    // fileId => array of authorized recipient addresses
+    mapping(bytes32 => address[]) private _fileRecipients;
+
     // ownerAddress => array of fileIds
     mapping(address => bytes32[]) private _ownerFiles;
+
+    // recipientAddress => array of fileIds shared with this recipient
+    mapping(address => bytes32[]) private _sharedFiles;
 
     event FileRegistered(
         bytes32 indexed fileId,
@@ -57,7 +63,6 @@ contract FileRegistry {
     error InvalidAddress();
     error EmptyCID();
     error EmptyKey();
-    error AdvancedRevocationNotImplemented();
 
     modifier onlyFileOwner(bytes32 fileId) {
         if (!_files[fileId].exists) revert FileNotFound(fileId);
@@ -96,6 +101,7 @@ contract FileRegistry {
 
         _wrappedKeys[fileId][msg.sender] = ownerWrappedKey;
         _authorizations[fileId][msg.sender] = true;
+        _fileRecipients[fileId].push(msg.sender);
         _ownerFiles[msg.sender].push(fileId);
 
         emit FileRegistered(fileId, msg.sender, ipfsCid, block.timestamp);
@@ -145,8 +151,12 @@ contract FileRegistry {
         if (recipient == address(0)) revert InvalidAddress();
         if (wrappedKey.length == 0) revert EmptyKey();
 
+        if (!_authorizations[fileId][recipient]) {
+            _authorizations[fileId][recipient] = true;
+            _fileRecipients[fileId].push(recipient);
+            _sharedFiles[recipient].push(fileId);
+        }
         _wrappedKeys[fileId][recipient] = wrappedKey;
-        _authorizations[fileId][recipient] = true;
 
         emit RecipientAuthorized(fileId, recipient, msg.sender);
     }
@@ -163,12 +173,22 @@ contract FileRegistry {
 
     /**
      * @notice Revoke a recipient's authorization.
-     * @dev Reverts with NotImplemented; full attribute revocation requires re-encryption proxy protocol.
      */
     function revokeRecipient(bytes32 fileId, address recipient) external onlyFileOwner(fileId) {
-        // Standard choice: Stub advanced revocation with custom error as full CP-ABE re-encryption is phased for Milestone 3
         if (recipient == address(0)) revert InvalidAddress();
-        revert AdvancedRevocationNotImplemented();
+        if (recipient == msg.sender) revert UnauthorizedCaller(recipient); // Owner cannot revoke self
+
+        _authorizations[fileId][recipient] = false;
+        delete _wrappedKeys[fileId][recipient];
+
+        emit RecipientRevoked(fileId, recipient, msg.sender);
+    }
+
+    /**
+     * @notice Helper to list all recipients that have ever been granted access to a file.
+     */
+    function getFileRecipients(bytes32 fileId) external view onlyFileOwner(fileId) returns (address[] memory) {
+        return _fileRecipients[fileId];
     }
 
     /**
@@ -177,5 +197,38 @@ contract FileRegistry {
      */
     function getFilesByOwner(address owner) external view returns (bytes32[] memory) {
         return _ownerFiles[owner];
+    }
+
+    /**
+     * @notice Helper to list all files shared with a specific user.
+     * @param user Target recipient address.
+     */
+    function getFilesSharedWithUser(address user) external view returns (bytes32[] memory) {
+        return _sharedFiles[user];
+    }
+
+    /**
+     * @notice Similar to Dgdrive: display accessible files of a specific owner for a caller.
+     * @param owner Address of the file owner.
+     * @param viewer Address of the caller/viewer wanting to inspect files.
+     */
+    function getAccessibleFilesFromOwner(address owner, address viewer) external view returns (bytes32[] memory) {
+        bytes32[] storage allOwnerFiles = _ownerFiles[owner];
+        uint256 count = 0;
+        for (uint256 i = 0; i < allOwnerFiles.length; i++) {
+            if (_authorizations[allOwnerFiles[i]][viewer]) {
+                count++;
+            }
+        }
+
+        bytes32[] memory accessible = new bytes32[](count);
+        uint256 idx = 0;
+        for (uint256 i = 0; i < allOwnerFiles.length; i++) {
+            if (_authorizations[allOwnerFiles[i]][viewer]) {
+                accessible[idx] = allOwnerFiles[i];
+                idx++;
+            }
+        }
+        return accessible;
     }
 }
