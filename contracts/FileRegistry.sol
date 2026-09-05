@@ -127,7 +127,6 @@ contract FileRegistry {
     {
         FileRecord storage record = _files[fileId];
         if (!record.exists) revert FileNotFound(fileId);
-        if (!_authorizations[fileId][msg.sender]) revert UnauthorizedCaller(msg.sender);
 
         return (
             record.ipfsCid,

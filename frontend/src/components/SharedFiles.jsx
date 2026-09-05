@@ -55,7 +55,8 @@ export default function SharedFiles({ signer, account, userKeys }) {
       const contract = getFileRegistryContract(signer);
       let fileIds = [];
       try {
-        fileIds = await contract.getFilesSharedWithUser(account);
+        const rawIds = await contract.getFilesSharedWithUser(account);
+        fileIds = Array.from(rawIds || []);
       } catch (err) {
         console.warn('getFilesSharedWithUser not supported yet on contract', err);
       }

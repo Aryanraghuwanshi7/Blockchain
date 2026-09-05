@@ -53,7 +53,8 @@ export default function MyFiles({ signer, account, userKeys }) {
     setLoading(true);
     try {
       const contract = getFileRegistryContract(signer);
-      const fileIds = await contract.getFilesByOwner(account);
+      const rawFileIds = await contract.getFilesByOwner(account);
+      const fileIds = Array.from(rawFileIds || []);
       setFiles(fileIds);
 
       // Load cached metadata from localStorage
