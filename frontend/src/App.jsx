@@ -233,6 +233,7 @@ export default function App() {
       const handleAccountsChanged = async (accounts) => {
         if (accounts && accounts.length > 0) {
           try {
+            ensureLocalBalance(accounts[0]);
             const browserProvider = new ethers.BrowserProvider(window.ethereum);
             const userSigner = await browserProvider.getSigner();
             const network = await browserProvider.getNetwork();
@@ -339,8 +340,6 @@ export default function App() {
       <WalletConnect
         account={account}
         onConnect={connectWallet}
-        onConnectTestWallet={connectLocalTestWallet}
-        onSelectTestAccount={connectTestAccountByIndex}
         isConnecting={isConnecting}
         error={error}
         chainId={chainId}
