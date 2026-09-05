@@ -66,6 +66,23 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
       setStatus('Awaiting block confirmation...');
       await tx.wait();
 
+      // Store local file metadata (name, size, type, timestamp) for rich UI display
+      try {
+        const metadata = {
+          fileId,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          ipfsCid,
+          createdAt: Date.now(),
+        };
+        const existing = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
+        existing[fileId.toLowerCase()] = metadata;
+        localStorage.setItem('blockdrive_files_metadata', JSON.stringify(existing));
+      } catch (metaErr) {
+        console.warn('Failed to cache file metadata locally', metaErr);
+      }
+
       setTxHash(tx.hash);
       setStatus('File successfully encrypted, pinned, and registered on-chain!');
       if (onFileUploaded) onFileUploaded();
