@@ -42,8 +42,8 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
       packedBuffer.set(new Uint8Array(ciphertext), iv.byteLength);
 
       // 3. Upload ciphertext to IPFS
-      setStatus('Uploading encrypted binary to IPFS...');
-      const ipfsCid = await uploadToIPFS(packedBuffer);
+      setStatus('Uploading encrypted binary to IPFS (Pinata Cloud)...');
+      const ipfsCid = await uploadToIPFS(packedBuffer, file.name);
 
       // 4. Wrap AES Key for Owner using client ECDH key
       setStatus('Wrapping AES key with owner public key...');
