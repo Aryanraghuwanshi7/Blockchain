@@ -148,28 +148,28 @@ export default function App() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
       {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-500/20">
+          <div className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-md shadow-indigo-600/20">
             <HardDrive className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">BlockDrive</h1>
-            <p className="text-xs text-slate-400">Decentralized Access-Controlled IPFS Storage</p>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">BlockDrive</h1>
+            <p className="text-xs text-slate-500">Decentralized Access-Controlled IPFS Storage</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Supabase User Auth State / Button */}
           {authUser ? (
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300">
-              <div className="w-2 h-2 rounded-full bg-emerald-400" />
-              <User className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 shadow-sm">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <User className="w-3.5 h-3.5 text-indigo-600" />
               <span className="font-medium max-w-[150px] truncate">{authUser.email}</span>
               <button
                 onClick={handleSignOut}
                 title="Sign Out"
-                className="ml-2 text-slate-500 hover:text-rose-400 transition-colors p-1"
+                className="ml-2 text-slate-400 hover:text-rose-600 transition-colors p-1"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -181,9 +181,9 @@ export default function App() {
                   setAuthModalView('signIn');
                   setIsAuthModalOpen(true);
                 }}
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-medium shadow-sm transition-colors flex items-center gap-1.5"
               >
-                <LogIn className="w-3.5 h-3.5 text-indigo-400" />
+                <LogIn className="w-3.5 h-3.5 text-indigo-600" />
                 Sign In
               </button>
               <button
@@ -191,7 +191,7 @@ export default function App() {
                   setAuthModalView('signUp');
                   setIsAuthModalOpen(true);
                 }}
-                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-indigo-600/20 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Sign Up
@@ -199,8 +199,8 @@ export default function App() {
             </div>
           )}
 
-          <div className="hidden md:flex items-center gap-2 text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-            <Shield className="w-3.5 h-3.5 text-indigo-400" />
+          <div className="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
+            <Shield className="w-3.5 h-3.5 text-indigo-600" />
             <span>IEEE Access 2018</span>
           </div>
         </div>
@@ -226,33 +226,33 @@ export default function App() {
 
       {/* Main Content Tabs */}
       <div className="space-y-4">
-        <div className="flex border-b border-slate-800 gap-4">
+        <div className="flex border-b border-slate-200 gap-4">
           <button
             onClick={() => setActiveTab('upload')}
-            className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
               activeTab === 'upload'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             Upload & Encrypt
           </button>
           <button
             onClick={() => setActiveTab('myfiles')}
-            className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
               activeTab === 'myfiles'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             My Files & Access
           </button>
           <button
             onClick={() => setActiveTab('decrypt')}
-            className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
               activeTab === 'decrypt'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             Decrypt & Download
@@ -272,12 +272,12 @@ export default function App() {
 
       {/* Client Key Inspection Box */}
       {userKeys && (
-        <div className="bg-slate-950 border border-slate-900 rounded-lg p-4 text-xs font-mono text-slate-500">
-          <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-            <Key className="w-3.5 h-3.5" />
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-mono text-slate-600 shadow-sm">
+          <div className="flex items-center gap-1.5 text-slate-700 font-semibold mb-1">
+            <Key className="w-3.5 h-3.5 text-indigo-600" />
             <span>Active Session ECDH Public Key (JWK format for recipient wrapping)</span>
           </div>
-          <div className="truncate text-slate-400 select-all">
+          <div className="truncate text-slate-500 select-all">
             {JSON.stringify(userKeys.publicKeyJWK)}
           </div>
         </div>

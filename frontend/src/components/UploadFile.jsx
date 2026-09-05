@@ -74,14 +74,14 @@ export default function UploadFile({ signer, userKeys, onFileUploaded }) {
   };
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800/80 shadow-xl shadow-indigo-950/20 rounded-xl p-6">
+    <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-4">
-        <UploadCloud className="w-5 h-5 text-indigo-400" />
-        <h3 className="text-lg font-semibold text-white">Client-Side Encrypted Upload</h3>
+        <UploadCloud className="w-5 h-5 text-indigo-600" />
+        <h3 className="text-lg font-bold text-slate-900">Client-Side Encrypted Upload</h3>
       </div>
 
       <div className="space-y-4">
-        <div className="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-lg p-6 text-center transition-colors">
+        <div className="border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/20 rounded-xl p-8 text-center transition-colors">
           <input
             type="file"
             id="fileInput"
@@ -90,8 +90,10 @@ export default function UploadFile({ signer, userKeys, onFileUploaded }) {
             disabled={isProcessing}
           />
           <label htmlFor="fileInput" className="cursor-pointer flex flex-col items-center">
-            <KeyRound className="w-8 h-8 text-slate-500 mb-2" />
-            <span className="text-sm font-medium text-slate-300">
+            <div className="p-3 bg-white rounded-full shadow-sm border border-slate-200 mb-3 text-indigo-600">
+              <KeyRound className="w-6 h-6" />
+            </div>
+            <span className="text-sm font-semibold text-slate-800">
               {file ? file.name : "Select a file to encrypt & upload"}
             </span>
             <span className="text-xs text-slate-500 mt-1">
@@ -103,22 +105,22 @@ export default function UploadFile({ signer, userKeys, onFileUploaded }) {
         <button
           onClick={handleUpload}
           disabled={!file || isProcessing || !signer}
-          className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2"
         >
           {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
           {isProcessing ? 'Processing...' : 'Encrypt & Register on BlockDrive'}
         </button>
 
         {status && (
-          <div className="p-3 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-slate-300">
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-700">
             {status}
           </div>
         )}
 
         {txHash && (
-          <div className="p-3 bg-emerald-950/40 border border-emerald-800 text-emerald-300 rounded-lg text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span className="truncate">Tx: {txHash}</span>
+          <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="truncate font-mono">Tx: {txHash}</span>
           </div>
         )}
       </div>
