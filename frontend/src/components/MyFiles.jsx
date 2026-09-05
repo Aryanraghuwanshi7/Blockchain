@@ -10,7 +10,10 @@ import {
   CheckCheck, 
   Calendar, 
   HardDrive, 
-  ExternalLink 
+  Edit2,
+  Check as CheckIcon,
+  X as XIcon,
+  Sparkles
 } from 'lucide-react';
 import { getFileRegistryContract } from '../utils/contracts';
 import { wrapKeyForRecipient } from '../utils/crypto';
@@ -32,6 +35,8 @@ export default function MyFiles({ signer, account, userKeys }) {
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [authStatus, setAuthStatus] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editNameValue, setEditNameValue] = useState('');
 
   const loadFiles = async () => {
     if (!signer || !account) return;
@@ -48,7 +53,7 @@ export default function MyFiles({ signer, account, userKeys }) {
       const details = {};
       for (const id of fileIds) {
         const idLower = id.toLowerCase();
-        let meta = cachedMeta[idLower] || null;
+        let meta = cachedMeta[idLower] || cachedMeta[id] || null;
         
         try {
           const record = await contract.getFileRecord(id);
@@ -56,7 +61,7 @@ export default function MyFiles({ signer, account, userKeys }) {
           
           if (!meta) {
             meta = {
-              name: `Encrypted_Document_${id.substring(2, 8)}.pdf`,
+              name: `Document_${id.substring(2, 8)}.enc`,
               size: 245000,
               ipfsCid: record.ipfsCid,
               createdAt: createdAtTimestamp || Date.now(),
@@ -70,7 +75,7 @@ export default function MyFiles({ signer, account, userKeys }) {
         }
 
         details[id] = meta || {
-          name: `Document_${id.substring(2, 8)}.pdf`,
+          name: `Document_${id.substring(2, 8)}.enc`,
           size: 150000,
           createdAt: Date.now(),
         };
@@ -91,6 +96,39 @@ export default function MyFiles({ signer, account, userKeys }) {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleStartRename = (fileId, currentName) => {
+    setEditingId(fileId);
+    setEditNameValue(currentName);
+  };
+
+  const handleSaveRename = (fileId) => {
+    if (!editNameValue.trim()) {
+      setEditingId(null);
+      return;
+    }
+    const updatedName = editNameValue.trim();
+    const updatedDetails = { ...fileDetails };
+    if (!updatedDetails[fileId]) updatedDetails[fileId] = {};
+    updatedDetails[fileId].name = updatedName;
+    setFileDetails(updatedDetails);
+
+    // Save back to localStorage
+    try {
+      const cachedMeta = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
+      const idLower = fileId.toLowerCase();
+      cachedMeta[idLower] = {
+        ...(cachedMeta[idLower] || {}),
+        name: updatedName,
+        fileId: fileId,
+      };
+      localStorage.setItem('blockdrive_files_metadata', JSON.stringify(cachedMeta));
+    } catch (err) {
+      console.error('Error saving renamed file to localStorage', err);
+    }
+
+    setEditingId(null);
   };
 
   const handleGrantAccess = async (fileId) => {
@@ -151,7 +189,7 @@ export default function MyFiles({ signer, account, userKeys }) {
         <div className="space-y-3.5">
           {files.map((fileId) => {
             const meta = fileDetails[fileId] || {};
-            const fileName = meta.name || `Encrypted_File_${fileId.substring(2, 8)}.pdf`;
+            const fileName = meta.name || `Encrypted_File_${fileId.substring(2, 8)}.enc`;
             const fileSize = meta.size ? formatBytes(meta.size) : 'Encrypted Blob';
             const uploadDate = meta.createdAt ? new Date(meta.createdAt).toLocaleDateString(undefined, {
               year: 'numeric',
@@ -161,24 +199,66 @@ export default function MyFiles({ signer, account, userKeys }) {
               minute: '2-digit'
             }) : 'Just now';
 
+            const isEditing = editingId === fileId;
+
             return (
               <div
                 key={fileId}
                 className="p-4 bg-slate-50/80 hover:bg-slate-50 border border-slate-200 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm transition-all"
               >
                 {/* File Icon & Info */}
-                <div className="flex items-start gap-3.5 min-w-0">
+                <div className="flex items-start gap-3.5 min-w-0 flex-1">
                   <div className="p-3 bg-white text-indigo-600 rounded-xl border border-slate-200 shadow-sm shrink-0 mt-0.5">
                     <FileText className="w-5 h-5" />
                   </div>
                   
-                  <div className="min-w-0">
-                    <h4 className="text-sm font-bold text-slate-900 truncate" title={fileName}>
-                      {fileName}
-                    </h4>
+                  <div className="min-w-0 flex-1">
+                    {/* File Name Display / Inline Edit */}
+                    {isEditing ? (
+                      <div className="flex items-center gap-2 mb-1">
+                        <input
+                          type="text"
+                          value={editNameValue}
+                          onChange={(e) => setEditNameValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSaveRename(fileId);
+                            if (e.key === 'Escape') setEditingId(null);
+                          }}
+                          autoFocus
+                          className="px-2.5 py-1 text-sm font-bold bg-white border border-indigo-400 rounded-lg text-slate-900 focus:outline-none ring-2 ring-indigo-100"
+                        />
+                        <button
+                          onClick={() => handleSaveRename(fileId)}
+                          className="p-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md shadow-sm"
+                          title="Save Name"
+                        >
+                          <CheckIcon className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="p-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-md"
+                          title="Cancel"
+                        >
+                          <XIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group">
+                        <h4 className="text-sm font-bold text-slate-900 truncate" title={fileName}>
+                          {fileName}
+                        </h4>
+                        <button
+                          onClick={() => handleStartRename(fileId, fileName)}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white text-slate-400 hover:text-indigo-600 rounded transition-opacity"
+                          title="Rename file label"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
 
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
-                      <span className="flex items-center gap-1 font-medium">
+                      <span className="flex items-center gap-1 font-medium text-slate-600">
                         <HardDrive className="w-3.5 h-3.5 text-slate-400" />
                         {fileSize}
                       </span>
@@ -189,7 +269,7 @@ export default function MyFiles({ signer, account, userKeys }) {
                       </span>
                     </div>
 
-                    {/* Copyable File ID */}
+                    {/* Copyable File ID Badge */}
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">File ID:</span>
                       <code className="text-xs font-mono text-indigo-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
