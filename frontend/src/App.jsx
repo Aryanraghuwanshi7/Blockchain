@@ -142,6 +142,25 @@ export default function App() {
     await connectTestAccountByIndex(0);
   };
 
+  const ensureLocalBalance = async (targetAddress) => {
+    try {
+      const localProvider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
+      const balance = await localProvider.getBalance(targetAddress);
+      if (balance < ethers.parseEther("1.0")) {
+        // Send 100 ETH from Hardhat Faucet Account #0
+        const faucetSigner = new ethers.Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", localProvider);
+        const tx = await faucetSigner.sendTransaction({
+          to: targetAddress,
+          value: ethers.parseEther("100.0")
+        });
+        await tx.wait();
+        console.log(`✓ Auto-funded ${targetAddress} with 100 ETH on local node!`);
+      }
+    } catch (e) {
+      console.warn("Auto-funding skipped:", e);
+    }
+  };
+
   const connectWallet = async () => {
     if (!window.ethereum) {
       // If MetaMask is missing or broken, fallback to local test wallet automatically
@@ -158,6 +177,9 @@ export default function App() {
       if (!accounts || accounts.length === 0) {
         throw new Error("No Ethereum account selected in MetaMask.");
       }
+
+      // Ensure account has test ETH on localhost
+      ensureLocalBalance(accounts[0]);
 
       const browserProvider = new ethers.BrowserProvider(window.ethereum);
       const userSigner = await browserProvider.getSigner();
