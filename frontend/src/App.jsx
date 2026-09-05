@@ -349,6 +349,7 @@ export default function App() {
             signer={signer}
             userKeys={userKeys}
             onConnectWallet={connectLocalTestWallet}
+            onFileUploaded={() => setActiveTab('myfiles')}
           />
         )}
         {activeTab === 'myfiles' && (

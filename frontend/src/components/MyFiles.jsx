@@ -249,23 +249,35 @@ export default function MyFiles({ signer, account, userKeys }) {
             {files.length} {files.length === 1 ? 'file' : 'files'}
           </span>
         </div>
-        <button
-          onClick={loadFiles}
-          disabled={loading}
-          className="text-xs px-3.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 shadow-sm font-medium transition-colors flex items-center gap-1.5"
-        >
-          {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-          {loading ? 'Refreshing...' : 'Refresh'}
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+            Wallet: {account ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}` : 'Not connected'}
+          </span>
+          <button
+            onClick={loadFiles}
+            disabled={loading}
+            className="text-xs px-3.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 shadow-sm font-medium transition-colors flex items-center gap-1.5"
+          >
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
       </div>
 
       {files.length === 0 ? (
-        <div className="py-12 text-center">
-          <div className="inline-flex p-3 bg-slate-50 rounded-2xl border border-slate-200 text-slate-400 mb-3">
-            <FileText className="w-8 h-8" />
+        <div className="py-12 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200 p-6">
+          <div className="inline-flex p-3 bg-white rounded-2xl border border-slate-200 text-slate-400 mb-3 shadow-sm">
+            <FileText className="w-8 h-8 text-indigo-600" />
           </div>
-          <p className="text-sm font-medium text-slate-600">No files registered by this account yet.</p>
-          <p className="text-xs text-slate-400 mt-1">Upload and encrypt a file to see it listed here.</p>
+          <h4 className="text-sm font-bold text-slate-800">No files registered by this wallet yet</h4>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            Files in this tab are strictly files <strong>uploaded by your connected wallet</strong> (<code className="text-indigo-600 font-mono">{account ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}` : '0x...'}</code>).
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <p className="text-xs text-slate-400">
+              Did someone share a file with you? Switch to the <strong>"Shared With Me"</strong> tab to access it!
+            </p>
+          </div>
         </div>
       ) : (
         <div className="space-y-3.5">
