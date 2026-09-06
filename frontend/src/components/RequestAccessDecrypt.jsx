@@ -11,6 +11,8 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState(null);
 
+  const [downloadFileName, setDownloadFileName] = useState('decrypted-document');
+
   const handleDecryptAndDownload = async () => {
     if (!fileIdInput || !signer) return;
     setIsDecrypting(true);
@@ -18,8 +20,9 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
     setDownloadUrl(null);
 
     try {
+      const targetId = fileIdInput.trim();
       const contract = getFileRegistryContract(signer);
-      const record = await contract.getFileRecord(fileIdInput.trim());
+      const record = await contract.getFileRecord(targetId);
 
       const ipfsCid = record.ipfsCid;
       const callerWrappedKeyHex = record.callerWrappedKey;
@@ -43,7 +46,7 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
 
       if (!aesKey) {
         const fileKeys = JSON.parse(localStorage.getItem('blockdrive_file_aes_keys') || '{}');
-        const rawHex = fileKeys[fileIdInput.trim().toLowerCase()];
+        const rawHex = fileKeys[targetId.toLowerCase()];
         if (rawHex) {
           const rawBytes = ethers.getBytes(rawHex);
           aesKey = await importRawKey(rawBytes);
@@ -55,16 +58,40 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
       }
 
       setStatus('Decrypting file with AES-256-GCM...');
-      // Extract 12-byte IV from head of payload
       const iv = new Uint8Array(encryptedPayload.slice(0, 12));
       const ciphertext = encryptedPayload.slice(12);
 
       const decryptedBuffer = await decryptFile(ciphertext, iv, aesKey);
 
-      const blob = new Blob([decryptedBuffer]);
+      // Detect filename and MIME type
+      const cached = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
+      const meta = cached[targetId.toLowerCase()] || {};
+      
+      let finalName = meta.name;
+      let mimeType = meta.type || 'application/octet-stream';
+
+      if (!finalName) {
+        const u8 = new Uint8Array(decryptedBuffer);
+        const headerStr = String.fromCharCode(...u8.slice(0, 8));
+        if (headerStr.startsWith('%PDF')) {
+          finalName = `Decrypted_Document_${targetId.substring(2, 8)}.pdf`;
+          mimeType = 'application/pdf';
+        } else if (u8[0] === 0x89 && u8[1] === 0x50 && u8[2] === 0x4e && u8[3] === 0x47) {
+          finalName = `Decrypted_Image_${targetId.substring(2, 8)}.png`;
+          mimeType = 'image/png';
+        } else if (u8[0] === 0xff && u8[1] === 0xd8 && u8[2] === 0xff) {
+          finalName = `Decrypted_Image_${targetId.substring(2, 8)}.jpg`;
+          mimeType = 'image/jpeg';
+        } else {
+          finalName = `Decrypted_File_${targetId.substring(2, 8)}.bin`;
+        }
+      }
+
+      setDownloadFileName(finalName);
+      const blob = new Blob([decryptedBuffer], { type: mimeType });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
-      setStatus('✓ Decryption successful! Click button below to save.');
+      setStatus(`✓ Decryption successful! Click button below to save "${finalName}".`);
     } catch (err) {
       console.error(err);
       setStatus(`Decryption failed: ${err.message || 'Access denied or invalid key'}`);
@@ -112,10 +139,10 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
         {downloadUrl && (
           <a
             href={downloadUrl}
-            download="decrypted-blockdrive-file"
+            download={downloadFileName}
             className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-sm flex items-center justify-center gap-2 text-sm transition-colors"
           >
-            <Download className="w-4 h-4" /> Download Decrypted File
+            <Download className="w-4 h-4" /> Save Decrypted File ({downloadFileName})
           </a>
         )}
       </div>
