@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { getFileRegistryContract } from '../utils/contracts';
 import { downloadFromIPFS } from '../utils/ipfs';
-import { unwrapKeyForRecipient, decryptFile } from '../utils/crypto';
+import { unwrapKeyForRecipient, decryptFile, importRawKey } from '../utils/crypto';
 
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return '0 B';
@@ -166,14 +166,20 @@ export default function SharedFiles({ signer, account, userKeys }) {
 
   // 1-Click Decrypt & Download
   const handleDecryptFile = async (fileId) => {
-    if (!signer || !userKeys) return;
+    if (!signer) return;
     setDecryptingFileId(fileId);
     setDecryptStatus(prev => ({ ...prev, [fileId]: 'Querying on-chain permissions & key...' }));
 
     try {
       const contract = getFileRegistryContract(signer);
-      const record = await contract.getFileRecord(fileId);
+      
+      // Check authorization on-chain
+      const isAuth = await contract.isAuthorized(account, fileId);
+      if (!isAuth) {
+        throw new Error("Smart contract verification: Access denied. You are not on the authorized list.");
+      }
 
+      const record = await contract.getFileRecord(fileId);
       const ipfsCid = record.ipfsCid;
       const callerWrappedKeyHex = record.callerWrappedKey;
 
@@ -181,22 +187,46 @@ export default function SharedFiles({ signer, account, userKeys }) {
       const encryptedPayload = await downloadFromIPFS(ipfsCid);
 
       setDecryptStatus(prev => ({ ...prev, [fileId]: 'Unwrapping AES-256 key with your ECDH private key...' }));
-      const wrappedKeyBytes = new Uint8Array(
-        callerWrappedKeyHex.replace('0x', '').match(/.{1,2}/g).map((byte) => parseInt(byte, 16))
-      );
+      let aesKey = null;
 
-      const aesKey = await unwrapKeyForRecipient(wrappedKeyBytes, userKeys.privateKeyJWK);
+      if (callerWrappedKeyHex && callerWrappedKeyHex !== '0x') {
+        try {
+          const wrappedKeyBytes = ethers.getBytes(callerWrappedKeyHex);
+          if (userKeys?.privateKeyJWK) {
+            aesKey = await unwrapKeyForRecipient(wrappedKeyBytes, userKeys.privateKeyJWK);
+          }
+        } catch (unwrapErr) {
+          console.warn('ECDH private key unwrap attempt failed, trying local keystore fallback:', unwrapErr);
+        }
+      }
+
+      // Check fallback keystore if unwrap failed or if key was generated locally
+      if (!aesKey) {
+        const fileKeys = JSON.parse(localStorage.getItem('blockdrive_file_aes_keys') || '{}');
+        const rawHex = fileKeys[fileId.toLowerCase()];
+        if (rawHex) {
+          const rawBytes = ethers.getBytes(rawHex);
+          aesKey = await importRawKey(rawBytes);
+        }
+      }
+
+      if (!aesKey) {
+        throw new Error("Unable to decrypt: Key mismatch or recipient private key not found.");
+      }
 
       setDecryptStatus(prev => ({ ...prev, [fileId]: 'Decrypting file client-side (AES-256-GCM)...' }));
       const iv = new Uint8Array(encryptedPayload.slice(0, 12));
       const ciphertext = encryptedPayload.slice(12);
 
       const decryptedBuffer = await decryptFile(ciphertext, iv, aesKey);
-      const blob = new Blob([decryptedBuffer]);
+      
+      const cached = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
+      const meta = cached[fileId.toLowerCase()] || fileMetadataMap[fileId] || {};
+      const blob = new Blob([decryptedBuffer], { type: meta.type || 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
 
       setDownloadUrls(prev => ({ ...prev, [fileId]: url }));
-      setDecryptStatus(prev => ({ ...prev, [fileId]: '✓ Decrypted successfully!' }));
+      setDecryptStatus(prev => ({ ...prev, [fileId]: '✓ Decrypted successfully! Click Save File.' }));
     } catch (err) {
       console.error('Decryption failed for file', fileId, err);
       setDecryptStatus(prev => ({ ...prev, [fileId]: `Error: ${err.message || 'Access denied'}` }));

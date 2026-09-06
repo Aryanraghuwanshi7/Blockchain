@@ -79,8 +79,15 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
         const existing = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
         existing[fileId.toLowerCase()] = metadata;
         localStorage.setItem('blockdrive_files_metadata', JSON.stringify(existing));
+
+        // Save raw AES key in local keystore for quick re-wrapping and fast decryption
+        const rawKey = await window.crypto.subtle.exportKey("raw", aesKey);
+        const rawHex = ethers.hexlify(new Uint8Array(rawKey));
+        const fileKeys = JSON.parse(localStorage.getItem('blockdrive_file_aes_keys') || '{}');
+        fileKeys[fileId.toLowerCase()] = rawHex;
+        localStorage.setItem('blockdrive_file_aes_keys', JSON.stringify(fileKeys));
       } catch (metaErr) {
-        console.warn('Failed to cache file metadata locally', metaErr);
+        console.warn('Failed to cache file metadata or key locally', metaErr);
       }
 
       setTxHash(tx.hash);

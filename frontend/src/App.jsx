@@ -42,9 +42,28 @@ export default function App() {
     setAuthUser(null);
   };
 
-  // Initialize client-side ECDH keypair for session-based key wrapping
+  // Initialize client-side ECDH keypair per connected account for reliable key agreement
   useEffect(() => {
     async function initKeys() {
+      const targetAddress = account ? account.toLowerCase() : 'default_session';
+      const storageKey = `blockdrive_ecdh_keys_${targetAddress}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setUserKeys(parsed);
+          // Register public key in registry
+          if (account) {
+            const pubRegistry = JSON.parse(localStorage.getItem('blockdrive_public_ecdh_registry') || '{}');
+            pubRegistry[targetAddress] = parsed.publicKeyJWK;
+            localStorage.setItem('blockdrive_public_ecdh_registry', JSON.stringify(pubRegistry));
+          }
+          return;
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+
       const keyPair = await window.crypto.subtle.generateKey(
         { name: "ECDH", namedCurve: "P-256" },
         true,
@@ -52,13 +71,20 @@ export default function App() {
       );
       const pubJWK = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
       const privJWK = await window.crypto.subtle.exportKey("jwk", keyPair.privateKey);
-      setUserKeys({
+      const newKeys = {
         publicKeyJWK: pubJWK,
         privateKeyJWK: privJWK,
-      });
+      };
+      localStorage.setItem(storageKey, JSON.stringify(newKeys));
+      if (account) {
+        const pubRegistry = JSON.parse(localStorage.getItem('blockdrive_public_ecdh_registry') || '{}');
+        pubRegistry[targetAddress] = pubJWK;
+        localStorage.setItem('blockdrive_public_ecdh_registry', JSON.stringify(pubRegistry));
+      }
+      setUserKeys(newKeys);
     }
     initKeys();
-  }, []);
+  }, [account]);
 
   const [chainId, setChainId] = useState('');
 

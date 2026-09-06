@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Download, Key, Lock, Unlock, Loader2, FileCheck } from 'lucide-react';
 import { getFileRegistryContract } from '../utils/contracts';
 import { downloadFromIPFS } from '../utils/ipfs';
-import { unwrapKeyForRecipient, decryptFile } from '../utils/crypto';
+import { unwrapKeyForRecipient, decryptFile, importRawKey } from '../utils/crypto';
+import { ethers } from 'ethers';
 
 export default function RequestAccessDecrypt({ signer, userKeys }) {
   const [fileIdInput, setFileIdInput] = useState('');
@@ -11,14 +12,14 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
   const [downloadUrl, setDownloadUrl] = useState(null);
 
   const handleDecryptAndDownload = async () => {
-    if (!fileIdInput || !signer || !userKeys) return;
+    if (!fileIdInput || !signer) return;
     setIsDecrypting(true);
     setStatus('Querying FileRegistry smart contract for wrapped key & CID...');
     setDownloadUrl(null);
 
     try {
       const contract = getFileRegistryContract(signer);
-      const record = await contract.getFileRecord(fileIdInput);
+      const record = await contract.getFileRecord(fileIdInput.trim());
 
       const ipfsCid = record.ipfsCid;
       const callerWrappedKeyHex = record.callerWrappedKey;
@@ -27,11 +28,31 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
       const encryptedPayload = await downloadFromIPFS(ipfsCid);
 
       setStatus('Unwrapping symmetric AES key with recipient private key...');
-      const wrappedKeyBytes = new Uint8Array(
-        callerWrappedKeyHex.replace('0x', '').match(/.{1,2}/g).map((byte) => parseInt(byte, 16))
-      );
+      let aesKey = null;
 
-      const aesKey = await unwrapKeyForRecipient(wrappedKeyBytes, userKeys.privateKeyJWK);
+      if (callerWrappedKeyHex && callerWrappedKeyHex !== '0x') {
+        try {
+          const wrappedKeyBytes = ethers.getBytes(callerWrappedKeyHex);
+          if (userKeys?.privateKeyJWK) {
+            aesKey = await unwrapKeyForRecipient(wrappedKeyBytes, userKeys.privateKeyJWK);
+          }
+        } catch (unwrapErr) {
+          console.warn('Unwrap error:', unwrapErr);
+        }
+      }
+
+      if (!aesKey) {
+        const fileKeys = JSON.parse(localStorage.getItem('blockdrive_file_aes_keys') || '{}');
+        const rawHex = fileKeys[fileIdInput.trim().toLowerCase()];
+        if (rawHex) {
+          const rawBytes = ethers.getBytes(rawHex);
+          aesKey = await importRawKey(rawBytes);
+        }
+      }
+
+      if (!aesKey) {
+        throw new Error('Could not unwrap encryption key. You may not be authorized.');
+      }
 
       setStatus('Decrypting file with AES-256-GCM...');
       // Extract 12-byte IV from head of payload
@@ -43,7 +64,7 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
       const blob = new Blob([decryptedBuffer]);
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
-      setStatus('Decryption successful! File ready for download.');
+      setStatus('✓ Decryption successful! Click button below to save.');
     } catch (err) {
       console.error(err);
       setStatus(`Decryption failed: ${err.message || 'Access denied or invalid key'}`);

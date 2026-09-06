@@ -95,9 +95,11 @@ export async function uploadToIPFS(data, fileName = "encrypted_payload.bin") {
   localCidStorage.set(cid, data);
   try {
     const binaryString = Array.from(new Uint8Array(data)).map(b => String.fromCharCode(b)).join("");
-    window.sessionStorage.setItem(`ipfs_${cid}`, btoa(binaryString));
+    const encoded = btoa(binaryString);
+    window.sessionStorage.setItem(`ipfs_${cid}`, encoded);
+    window.localStorage.setItem(`ipfs_${cid}`, encoded);
   } catch {
-    // Session storage cache
+    // Storage cache fallback
   }
   return cid;
 }
@@ -114,14 +116,15 @@ export async function downloadFromIPFS(cid) {
     return cached.buffer ? cached.buffer : cached;
   }
 
-  // Check sessionStorage
-  const stored = window.sessionStorage.getItem(`ipfs_${cid}`);
+  // Check sessionStorage or localStorage
+  const stored = window.sessionStorage.getItem(`ipfs_${cid}`) || window.localStorage.getItem(`ipfs_${cid}`);
   if (stored) {
     const binary = atob(stored);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
     }
+    localCidStorage.set(cid, bytes);
     return bytes.buffer;
   }
 

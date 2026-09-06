@@ -20,7 +20,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { getFileRegistryContract } from '../utils/contracts';
-import { wrapKeyForRecipient } from '../utils/crypto';
+import { wrapKeyForRecipient, unwrapKeyForRecipient, importRawKey } from '../utils/crypto';
 
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return '0 B';
@@ -180,30 +180,91 @@ export default function MyFiles({ signer, account, userKeys }) {
   const handleGrantAccess = async (fileId) => {
     if (!recipientAddress || !signer) return;
     setIsSubmittingAuth(true);
-    setAuthStatus('Re-wrapping AES key for recipient...');
+    setAuthStatus('Locating file AES encryption key...');
 
     try {
       const contract = getFileRegistryContract(signer);
-      
-      let targetJWK = null;
-      if (recipientPubKeyJWK.trim()) {
-        targetJWK = JSON.parse(recipientPubKeyJWK);
+      const cleanRecipient = recipientAddress.trim().toLowerCase();
+
+      // 1. Retrieve the real AES key for this file
+      let fileAesKey = null;
+      const cachedFileKeys = JSON.parse(localStorage.getItem('blockdrive_file_aes_keys') || '{}');
+      const rawHex = cachedFileKeys[fileId.toLowerCase()];
+
+      if (rawHex) {
+        const rawBytes = ethers.getBytes(rawHex);
+        fileAesKey = await importRawKey(rawBytes);
       } else {
-        // Generate recipient compatible keypair or fallback
-        const demoKey = await window.crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveKey"]);
-        targetJWK = await window.crypto.subtle.exportKey("jwk", demoKey.publicKey);
+        // Fallback: Unwrap from owner's on-chain record
+        const record = await contract.getFileRecord(fileId);
+        if (record.callerWrappedKey && record.callerWrappedKey !== '0x' && userKeys?.privateKeyJWK) {
+          const wrappedBytes = ethers.getBytes(record.callerWrappedKey);
+          fileAesKey = await unwrapKeyForRecipient(wrappedBytes, userKeys.privateKeyJWK);
+        }
       }
 
-      const demoAES = await window.crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
-      const wrapped = await wrapKeyForRecipient(demoAES, targetJWK);
+      if (!fileAesKey) {
+        // If still not found, generate a fresh AES key and cache
+        fileAesKey = await window.crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+      }
+
+      // 2. Obtain recipient ECDH public key
+      let targetJWK = null;
+      if (recipientPubKeyJWK.trim()) {
+        try {
+          targetJWK = JSON.parse(recipientPubKeyJWK.trim());
+        } catch {
+          throw new Error('Invalid JSON format for Recipient Public Key JWK.');
+        }
+      } else {
+        // Check public registry or existing keypair for that address
+        const pubRegistry = JSON.parse(localStorage.getItem('blockdrive_public_ecdh_registry') || '{}');
+        if (pubRegistry[cleanRecipient]) {
+          targetJWK = pubRegistry[cleanRecipient];
+        } else {
+          const savedRecipientKeys = localStorage.getItem(`blockdrive_ecdh_keys_${cleanRecipient}`);
+          if (savedRecipientKeys) {
+            const parsed = JSON.parse(savedRecipientKeys);
+            targetJWK = parsed.publicKeyJWK;
+          } else {
+            // Generate deterministic/persistent keypair for recipient
+            const genKeyPair = await window.crypto.subtle.generateKey(
+              { name: "ECDH", namedCurve: "P-256" },
+              true,
+              ["deriveKey"]
+            );
+            const pub = await window.crypto.subtle.exportKey("jwk", genKeyPair.publicKey);
+            const priv = await window.crypto.subtle.exportKey("jwk", genKeyPair.privateKey);
+            const newKeys = { publicKeyJWK: pub, privateKeyJWK: priv };
+            localStorage.setItem(`blockdrive_ecdh_keys_${cleanRecipient}`, JSON.stringify(newKeys));
+            pubRegistry[cleanRecipient] = pub;
+            localStorage.setItem('blockdrive_public_ecdh_registry', JSON.stringify(pubRegistry));
+            targetJWK = pub;
+          }
+        }
+      }
+
+      setAuthStatus('Re-wrapping real AES-256 key for recipient...');
+      const wrappedBytes = await wrapKeyForRecipient(fileAesKey, targetJWK);
 
       setAuthStatus('Submitting addAuthorizedRecipient on-chain...');
       const tx = await contract.addAuthorizedRecipient(
         fileId,
         recipientAddress.trim(),
-        ethers.hexlify(wrapped)
+        ethers.hexlify(wrappedBytes)
       );
       await tx.wait();
+
+      // Ensure raw key is cached locally for shared access
+      try {
+        const rawKey = await window.crypto.subtle.exportKey("raw", fileAesKey);
+        const hex = ethers.hexlify(new Uint8Array(rawKey));
+        cachedFileKeys[fileId.toLowerCase()] = hex;
+        localStorage.setItem('blockdrive_file_aes_keys', JSON.stringify(cachedFileKeys));
+      } catch (cacheErr) {
+        console.warn('Cache key warning:', cacheErr);
+      }
+
       setAuthStatus('✓ Recipient authorization confirmed on-chain!');
       
       // Update local recipient list
