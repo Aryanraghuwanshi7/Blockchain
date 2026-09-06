@@ -8,6 +8,7 @@ import MyFiles from './components/MyFiles';
 import SharedFiles from './components/SharedFiles';
 import RequestAccessDecrypt from './components/RequestAccessDecrypt';
 import AuthModal from './components/AuthModal';
+import { CertificateVerifier, CertificateIssuer } from './features/certificate-verification';
 
 export default function App() {
   const [provider, setProvider] = useState(null);
@@ -16,7 +17,22 @@ export default function App() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState('');
   const [userKeys, setUserKeys] = useState(null);
-  const [activeTab, setActiveTab] = useState('upload');
+  
+  // Support deep links like ?tab=verify or ?tab=issue or #verify
+  const getInitialTab = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['upload', 'myfiles', 'shared', 'decrypt', 'verify', 'issue'].includes(tabParam)) {
+      return tabParam;
+    }
+    const hash = window.location.hash.replace('#', '');
+    if (['upload', 'myfiles', 'shared', 'decrypt', 'verify', 'issue'].includes(hash)) {
+      return hash;
+    }
+    return 'upload';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
 
   // Supabase User Auth State
   const [authUser, setAuthUser] = useState(null);
@@ -415,6 +431,26 @@ export default function App() {
           >
             Manual Decrypt
           </button>
+          <button
+            onClick={() => setActiveTab('verify')}
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${
+              activeTab === 'verify'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Verify Document
+          </button>
+          <button
+            onClick={() => setActiveTab('issue')}
+            className={`pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${
+              activeTab === 'issue'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Issue Certificate
+          </button>
         </div>
 
         {activeTab === 'upload' && (
@@ -433,6 +469,16 @@ export default function App() {
         )}
         {activeTab === 'decrypt' && (
           <RequestAccessDecrypt signer={signer} userKeys={userKeys} />
+        )}
+        {activeTab === 'verify' && (
+          <CertificateVerifier />
+        )}
+        {activeTab === 'issue' && (
+          <CertificateIssuer
+            signer={signer}
+            account={account}
+            onConnectWallet={connectLocalTestWallet}
+          />
         )}
       </div>
 

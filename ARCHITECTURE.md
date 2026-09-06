@@ -26,3 +26,10 @@
 | **Encrypted Keyword Search** | *Designed (Phased M3)* | Searchable symmetric encryption (SSE) inverted index over encrypted CIDs. |
 | **Instant Dynamic Revocation** | *Stubbed / Phased M3* | Stubbed in `FileRegistry.revokeRecipient` with `AdvancedRevocationNotImplemented`; requires proxy re-encryption. |
 | **Anomaly Detection Watcher** | *Designed (Phased M4)* | Off-chain heuristic/oracle monitoring anomalous download frequencies. |
+| **Document / Certificate Verification** | **Implemented** | Independent on-chain fingerprint registry (`CertificateRegistry.sol`) with role-gated issuance and public gas-free verification. |
+
+---
+
+## Independent Module: Document & Certificate Verification
+- **`CertificateRegistry.sol`**: A standalone on-chain registry allowing designated authorities (`ISSUER_ROLE`) to publish document fingerprints (Keccak-256) with recipient metadata and revocation controls.
+- **Gas-Free Public Verification**: Anyone can verify any document's authenticity and tamper-proof state without a crypto wallet using client-side cryptographic hashing.
