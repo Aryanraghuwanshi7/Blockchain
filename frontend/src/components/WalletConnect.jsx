@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import { Wallet, ShieldCheck, AlertCircle, RefreshCw, Loader2, UserCheck, Copy, Check } from 'lucide-react';
+import { Wallet, AlertCircle, RefreshCw, Copy, Check } from 'lucide-react';
 import { useRole } from '../context/RoleContext';
 import {
   onboardDoctor,
@@ -23,34 +23,6 @@ export default function WalletConnect({
   const [isSwitching, setIsSwitching] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const getRoleBadge = (roleName) => {
-    switch (roleName) {
-      case 'doctor':
-        return {
-          label: 'Doctor',
-          classes: 'bg-blue-50 text-blue-700 border-blue-200',
-        };
-      case 'medicalStaff':
-        return {
-          label: 'Medical Staff',
-          classes: 'bg-teal-50 text-teal-700 border-teal-200',
-        };
-      case 'patient':
-        return {
-          label: 'Patient',
-          classes: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        };
-      case 'unregistered':
-      default:
-        return {
-          label: 'Unregistered',
-          classes: 'bg-slate-100 text-slate-600 border-slate-200',
-        };
-    }
-  };
-
-  const roleBadge = getRoleBadge(role);
-
   const handleCopy = () => {
     if (!account) return;
     navigator.clipboard.writeText(account);
@@ -68,15 +40,12 @@ export default function WalletConnect({
     setIsSwitching(true);
     const cleanAccount = account.toLowerCase();
 
-    // 1. Immediately persist chosen role override locally so role changes immediately in UI
     localStorage.setItem(`blockdrive_role_override_${cleanAccount}`, targetRole);
 
-    // 2. Refresh role context state immediately
     if (refreshRole) {
       await refreshRole();
     }
 
-    // 3. Attempt on-chain registration in background if local test node is active
     try {
       const isAlive = await isLocalNodeAlive();
       if (isAlive) {
@@ -86,127 +55,95 @@ export default function WalletConnect({
           localProvider
         );
       
-      // Ensure test account has ETH
-      try {
-        await adminSigner.sendTransaction({
-          to: account,
-          value: ethers.parseEther("2.0")
-        });
-      } catch {}
+        try {
+          await adminSigner.sendTransaction({
+            to: account,
+            value: ethers.parseEther("2.0")
+          });
+        } catch {}
 
-      // Clean conflicting roles to maintain role exclusivity
-      try { await revokeHealthcareRole(adminSigner, account, 'patient'); } catch {}
-      try { await revokeHealthcareRole(adminSigner, account, 'doctor'); } catch {}
-      try { await revokeHealthcareRole(adminSigner, account, 'medicalStaff'); } catch {}
+        try { await revokeHealthcareRole(adminSigner, account, 'patient'); } catch {}
+        try { await revokeHealthcareRole(adminSigner, account, 'doctor'); } catch {}
+        try { await revokeHealthcareRole(adminSigner, account, 'medicalStaff'); } catch {}
 
-      if (targetRole === 'doctor') {
-        await onboardDoctor(adminSigner, account);
-      } else if (targetRole === 'medicalStaff') {
-        await onboardMedicalStaff(adminSigner, account);
-      } else if (targetRole === 'patient') {
-        await onboardPatient(adminSigner, account);
+        if (targetRole === 'doctor') {
+          await onboardDoctor(adminSigner, account);
+        } else if (targetRole === 'medicalStaff') {
+          await onboardMedicalStaff(adminSigner, account);
+        } else if (targetRole === 'patient') {
+          await onboardPatient(adminSigner, account);
+        }
       }
+    } catch (err) {
+      console.warn("Role update note:", err.message);
+    } finally {
+      if (refreshRole) await refreshRole();
+      setIsSwitching(false);
     }
-  } catch (err) {
-    console.warn("On-chain role registration skipped (node offline or custom network), role set active in UI:", err.message);
-  } finally {
-    if (refreshRole) await refreshRole();
-    setIsSwitching(false);
-  }
-};
+  };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-3.5 sm:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3.5 shadow-2xs">
+    <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
       <div className="flex items-center gap-3 min-w-0">
-        <div className="p-2 bg-slate-100 text-slate-700 rounded-md border border-slate-200 shrink-0">
+        <div className="p-2 bg-gray-100 text-gray-700 rounded shrink-0">
           <Wallet className="w-4 h-4" />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs sm:text-sm font-semibold text-slate-900">Web3 Authentication</h2>
-            {account && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Connected
-              </span>
-            )}
+            <span className="text-xs font-semibold text-gray-900">Wallet</span>
+            <span className={`text-[11px] font-medium ${account ? 'text-emerald-700' : 'text-gray-500'}`}>
+              {account ? '● Connected' : '○ Not connected'}
+            </span>
           </div>
-          <div className="text-xs text-slate-500 mt-0.5 font-normal">
+          <div className="text-xs text-gray-500 mt-0.5">
             {account ? (
               <div className="flex items-center gap-2 flex-wrap text-xs">
-                <span className="text-slate-400 font-normal">Account:</span>
-                <div className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 hover:border-slate-300 transition-colors">
-                  <span className="font-mono text-slate-800 text-xs select-all">
-                    {formatAddress(account)}
-                  </span>
-                  <button
-                    onClick={handleCopy}
-                    title="Copy full wallet address"
-                    className="p-0.5 rounded text-slate-400 hover:text-slate-700 transition-all duration-150 active:scale-90 cursor-pointer"
-                  >
-                    {copied ? (
-                      <Check className="w-3 h-3 text-emerald-600" />
-                    ) : (
-                      <Copy className="w-3 h-3" />
-                    )}
-                  </button>
-                </div>
-                <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${roleBadge.classes}`}>
-                  {roleBadge.label}
+                <span className="font-mono text-gray-800 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
+                  {formatAddress(account)}
+                </span>
+                <button
+                  onClick={handleCopy}
+                  title="Copy address"
+                  className="text-gray-400 hover:text-gray-700 p-0.5 cursor-pointer"
+                >
+                  {copied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                </button>
+                <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded capitalize">
+                  {role}
                 </span>
               </div>
             ) : (
-              "Connect an authorized Ethereum wallet to sign and verify records."
+              <span>Connect MetaMask to sign transactions and encrypt records.</span>
             )}
           </div>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
-        {/* 1-Click Role Switcher for Testing */}
         {account && (
-          <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-md p-0.5">
-            <span className="text-[10px] uppercase font-medium text-slate-400 px-1.5 hidden sm:inline">Role:</span>
-            <button
-              onClick={() => handleSwitchRole('doctor')}
-              disabled={isSwitching || role === 'doctor'}
-              className={`px-2 py-1 text-xs font-medium rounded transition-all duration-150 cursor-pointer ${
-                role === 'doctor'
-                  ? 'bg-blue-600 text-white shadow-2xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200 active:scale-[0.98]'
-              }`}
-            >
-              Doctor
-            </button>
-            <button
-              onClick={() => handleSwitchRole('medicalStaff')}
-              disabled={isSwitching || role === 'medicalStaff'}
-              className={`px-2 py-1 text-xs font-medium rounded transition-all duration-150 cursor-pointer ${
-                role === 'medicalStaff'
-                  ? 'bg-teal-600 text-white shadow-2xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200 active:scale-[0.98]'
-              }`}
-            >
-              Medical Staff
-            </button>
-            <button
-              onClick={() => handleSwitchRole('patient')}
-              disabled={isSwitching || role === 'patient'}
-              className={`px-2 py-1 text-xs font-medium rounded transition-all duration-150 cursor-pointer ${
-                role === 'patient'
-                  ? 'bg-emerald-600 text-white shadow-2xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200 active:scale-[0.98]'
-              }`}
-            >
-              Patient
-            </button>
+          <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded p-0.5 text-xs">
+            <span className="text-gray-400 px-1.5 hidden sm:inline">Role:</span>
+            {['doctor', 'medicalStaff', 'patient'].map((r) => (
+              <button
+                key={r}
+                onClick={() => handleSwitchRole(r)}
+                disabled={isSwitching || role === r}
+                className={`px-2 py-0.5 rounded text-xs transition-colors cursor-pointer capitalize ${
+                  role === r
+                    ? 'bg-gray-900 text-white font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                }`}
+              >
+                {r === 'medicalStaff' ? 'Staff' : r}
+              </button>
+            ))}
           </div>
         )}
 
         {account && !isLocalOrSepolia && (
           <button
             onClick={onSwitchNetwork}
-            className="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white text-xs font-medium rounded-md transition-all duration-150 shadow-2xs cursor-pointer"
+            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded cursor-pointer"
           >
             Switch to Localhost
           </button>
@@ -215,17 +152,16 @@ export default function WalletConnect({
         {account ? (
           <button
             onClick={onConnect}
-            title="Request account switch in MetaMask"
-            className="px-2.5 py-1.5 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] text-slate-700 border border-slate-200 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            className="px-2.5 py-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+            <RefreshCw className="w-3 h-3 text-gray-500" />
             <span>Switch Account</span>
           </button>
         ) : (
           <button
             onClick={onConnect}
             disabled={isConnecting}
-            className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 active:scale-[0.98] disabled:bg-slate-300 text-white text-xs font-medium rounded-md shadow-2xs transition-all duration-150 flex items-center gap-1.5 cursor-pointer interactive-lift-subtle"
+            className="px-3 py-1.5 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white text-xs font-medium rounded transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Wallet className="w-3.5 h-3.5" />
             <span>{isConnecting ? "Connecting..." : "Connect Wallet"}</span>
@@ -234,11 +170,12 @@ export default function WalletConnect({
       </div>
 
       {error && (
-        <div className="w-full mt-2 p-2.5 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-md flex items-center gap-2 font-normal">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+        <div className="w-full mt-2 p-2 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
     </div>
   );
 }
+
