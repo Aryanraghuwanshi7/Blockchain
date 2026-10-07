@@ -34,8 +34,73 @@
     padding: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
     background-color: #f9fafb;
-    color: #111827;
+    color: #000000 !important;
     min-height: 100vh;
+  }
+
+  /* Strict Font Color: ONLY Black (#000000) or White (#ffffff) */
+  body,
+  h1, h2, h3, h4, h5, h6,
+  p, span, a, label, li, td, th,
+  div, small, strong, em, code, pre,
+  input, textarea, select, button,
+  svg {
+    color: #000000;
+  }
+
+  /* Neutralize all colored text classes to pure black */
+  [class*="text-gray-"],
+  [class*="text-slate-"],
+  [class*="text-zinc-"],
+  [class*="text-neutral-"],
+  [class*="text-blue-"],
+  [class*="text-emerald-"],
+  [class*="text-green-"],
+  [class*="text-teal-"],
+  [class*="text-indigo-"],
+  [class*="text-purple-"],
+  [class*="text-amber-"],
+  [class*="text-yellow-"],
+  [class*="text-red-"],
+  [class*="text-rose-"],
+  [class*="text-cyan-"],
+  [class*="text-orange-"],
+  [class*="text-violet-"],
+  [class*="text-fuchsia-"],
+  [class*="text-pink-"],
+  [class*="text-muted-"] {
+    color: #000000 !important;
+  }
+
+  /* Explicit White text rules for dark backgrounds/buttons */
+  .text-white,
+  .text-white *,
+  [class*="text-white"],
+  [class*="text-white"] *,
+  .bg-black,
+  .bg-black *,
+  .bg-slate-900,
+  .bg-slate-900 *,
+  .bg-gray-900,
+  .bg-gray-900 *,
+  .bg-blue-600,
+  .bg-blue-600 *,
+  .bg-emerald-600,
+  .bg-emerald-600 * {
+    color: #ffffff !important;
+  }
+
+  /* Except when child explicitly requests black text inside a dark container */
+  .text-black,
+  .text-black *,
+  [class*="text-black"],
+  [class*="text-black"] * {
+    color: #000000 !important;
+  }
+
+  ::placeholder {
+    color: #000000 !important;
+    opacity: 0.5;
   }
 
   code, kbd, samp, pre, input, button, select, textarea {
@@ -54,6 +119,7 @@
   select,
   textarea {
     font-size: 0.875rem;
+    color: #000000 !important;
   }
 
   input[type="text"]:focus,
@@ -62,6 +128,7 @@
   select:focus,
   textarea:focus {
     outline: none;
-    border-color: #111827;
+    border-color: #000000;
   }
 }
+
