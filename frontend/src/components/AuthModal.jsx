@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
-import { 
-  Lock, 
-  Mail, 
-  Eye, 
-  EyeOff, 
-  CheckCircle2, 
-  AlertCircle, 
-  Loader2, 
-  X, 
-  UserPlus, 
-  LogIn, 
-  KeyRound,
-  ShieldCheck
-} from 'lucide-react';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView = 'signIn' }) {
   const [view, setView] = useState(initialView); // 'signIn' | 'signUp' | 'forgotPassword'
@@ -85,7 +71,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
 
       if (error) throw error;
 
-      setMessage({ text: '✓ Signed in successfully.', type: 'success' });
+      setMessage({ text: 'Signed in successfully.', type: 'success' });
       setTimeout(() => {
         if (onAuthSuccess) onAuthSuccess(data.user);
         onClose();
@@ -174,7 +160,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
       const { data, error } = await supabase.auth.updateUser({ password: password });
       if (error) throw error;
 
-      setMessage({ text: '✓ Account created successfully.', type: 'success' });
+      setMessage({ text: 'Account created successfully.', type: 'success' });
       setTimeout(() => {
         if (onAuthSuccess) onAuthSuccess(data.user);
         onClose();
@@ -270,7 +256,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
       const { error } = await supabase.auth.updateUser({ password: password });
       if (error) throw error;
 
-      setMessage({ text: '✓ Password reset successful. Please sign in.', type: 'success' });
+      setMessage({ text: 'Password reset successful. Please sign in.', type: 'success' });
       await supabase.auth.signOut();
       setTimeout(() => {
         setView('signIn');
@@ -286,25 +272,25 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-      <div className="relative w-full max-w-sm bg-white border border-slate-200 rounded-lg shadow-xl p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+      <div className="relative w-full max-w-sm bg-white border border-gray-300 rounded-lg p-6 text-black">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1 rounded"
+          className="absolute top-4 right-4 text-black hover:opacity-60 text-sm font-semibold p-1 cursor-pointer"
           aria-label="Close"
         >
-          <X className="w-4 h-4" />
+          ✕
         </button>
 
         {/* Modal Header */}
         <div className="mb-5">
-          <h3 className="text-base font-semibold text-slate-900">
+          <h3 className="text-base font-semibold text-black">
             {view === 'signIn' && 'Sign In to BlockDrive'}
             {view === 'signUp' && 'Create Account'}
             {view === 'forgotPassword' && 'Reset Password'}
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs font-normal text-black mt-0.5 opacity-75">
             {view === 'signIn' && 'Authenticate to manage your documents and keys'}
             {view === 'signUp' && (
               signUpStep === 1 ? 'Step 1: Enter your email address' :
@@ -321,16 +307,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
 
         {/* Message Banner */}
         {message.text && (
-          <div className={`mb-4 p-2.5 rounded text-xs flex items-center gap-2 border ${
-            message.type === 'error'
-              ? 'bg-rose-50 border-rose-200 text-rose-800'
-              : message.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-slate-100 border-slate-200 text-slate-800'
-          }`}>
-            {message.type === 'error' && <AlertCircle className="w-4 h-4 shrink-0" />}
-            {message.type === 'success' && <CheckCircle2 className="w-4 h-4 shrink-0" />}
-            {message.type === 'info' && <ShieldCheck className="w-4 h-4 shrink-0" />}
+          <div className="mb-4 p-2.5 rounded text-xs border border-black bg-gray-50 text-black">
             <span>{message.text}</span>
           </div>
         )}
@@ -339,7 +316,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
         {view === 'signIn' && (
           <form onSubmit={handleSignIn} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
+              <label className="block text-xs font-medium text-black mb-1">
                 Email Address
               </label>
               <input
@@ -347,13 +324,13 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@domain.com"
-                className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
+              <label className="block text-xs font-medium text-black mb-1">
                 Password
               </label>
               <div className="relative">
@@ -362,15 +339,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
-                  className="w-full px-3 py-2 pr-9 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                  className="w-full px-3 py-2 pr-16 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-black hover:opacity-60 cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  {showPassword ? '[Hide]' : '[Show]'}
                 </button>
               </div>
             </div>
@@ -382,7 +359,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                   setView('forgotPassword');
                   resetFlows();
                 }}
-                className="text-slate-600 hover:text-slate-900 underline"
+                className="text-black underline cursor-pointer"
               >
                 Forgot Password?
               </button>
@@ -391,13 +368,12 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
             >
-              {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogIn className="w-3.5 h-3.5" />}
               {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
 
-            <div className="text-center text-xs text-slate-500 pt-3 border-t border-slate-100">
+            <div className="text-center text-xs text-black pt-3 border-t border-gray-200">
               Don't have an account?{' '}
               <button
                 type="button"
@@ -405,7 +381,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                   setView('signUp');
                   resetFlows();
                 }}
-                className="text-slate-900 font-semibold hover:underline"
+                className="text-black font-semibold hover:underline cursor-pointer"
               >
                 Register
               </button>
@@ -419,7 +395,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             {signUpStep === 1 && (
               <form onSubmit={handleSignUpEmail} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Email Address
                   </label>
                   <input
@@ -427,16 +403,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@domain.com"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
                   {isLoading ? 'Sending Code...' : 'Send Verification Code'}
                 </button>
               </form>
@@ -445,7 +420,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             {signUpStep === 2 && (
               <form onSubmit={handleVerifySignUpOtp} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Enter 6-Digit Code
                   </label>
                   <input
@@ -454,16 +429,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="123456"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-center tracking-widest font-mono text-sm text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-center font-mono text-sm text-black outline-none"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                   {isLoading ? 'Verifying...' : 'Verify Code'}
                 </button>
               </form>
@@ -472,7 +446,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             {signUpStep === 3 && (
               <form onSubmit={handleSetInitialPassword} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Set Password
                   </label>
                   <input
@@ -480,12 +454,12 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Minimum 6 characters"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Confirm Password
                   </label>
                   <input
@@ -493,22 +467,21 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm password"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lock className="w-3.5 h-3.5" />}
                   {isLoading ? 'Completing Registration...' : 'Complete Registration'}
                 </button>
               </form>
             )}
 
-            <div className="text-center text-xs text-slate-500 pt-3 border-t border-slate-100 mt-3">
+            <div className="text-center text-xs text-black pt-3 border-t border-gray-200 mt-3">
               Already have an account?{' '}
               <button
                 type="button"
@@ -516,7 +489,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                   setView('signIn');
                   resetFlows();
                 }}
-                className="text-slate-900 font-semibold hover:underline"
+                className="text-black font-semibold hover:underline cursor-pointer"
               >
                 Sign In
               </button>
@@ -530,7 +503,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             {forgotStep === 1 && (
               <form onSubmit={handleForgotEmail} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Registered Email Address
                   </label>
                   <input
@@ -538,16 +511,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@domain.com"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
                   {isLoading ? 'Sending Code...' : 'Send Reset Code'}
                 </button>
               </form>
@@ -556,7 +528,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             {forgotStep === 2 && (
               <form onSubmit={handleVerifyForgotOtp} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Enter 6-Digit Reset Code
                   </label>
                   <input
@@ -565,16 +537,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="123456"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-center tracking-widest font-mono text-sm text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-center font-mono text-sm text-black outline-none"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                   {isLoading ? 'Verifying...' : 'Verify Code'}
                 </button>
               </form>
@@ -583,7 +554,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
             {forgotStep === 3 && (
               <form onSubmit={handleSaveNewPassword} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     New Password
                   </label>
                   <input
@@ -591,12 +562,12 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min. 6 characters"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Confirm New Password
                   </label>
                   <input
@@ -604,22 +575,21 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Re-enter password"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 focus:border-slate-500 rounded text-xs text-slate-900 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-black rounded text-xs text-black outline-none"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white text-xs font-medium rounded flex items-center justify-center cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5" />}
                   {isLoading ? 'Saving...' : 'Save New Password'}
                 </button>
               </form>
             )}
 
-            <div className="text-center text-xs text-slate-500 pt-3 border-t border-slate-100 mt-3">
+            <div className="text-center text-xs text-black pt-3 border-t border-gray-200 mt-3">
               Remembered your password?{' '}
               <button
                 type="button"
@@ -627,7 +597,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialView 
                   setView('signIn');
                   resetFlows();
                 }}
-                className="text-slate-900 font-semibold hover:underline"
+                className="text-black font-semibold hover:underline cursor-pointer"
               >
                 Sign In
               </button>

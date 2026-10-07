@@ -1,27 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import {
-  Shield,
-  HardDrive,
-  Key,
-  User,
-  LogOut,
-  LogIn,
-  ChevronDown,
-  ChevronUp,
-  Menu,
-  X,
-  Upload,
-  FileText,
-  Share2,
-  CheckCircle2,
-  Award,
-  ChevronRight,
-  Copy,
-  Check,
-  Users,
-  ShieldAlert
-} from 'lucide-react';
 import { supabase } from './utils/supabaseClient';
 import WalletConnect from './components/WalletConnect';
 import UploadFile from './components/UploadFile';
@@ -93,21 +71,18 @@ function AppContent({
           id: 'upload',
           label: 'Upload & Encrypt',
           desc: 'Securely upload records',
-          icon: Upload,
           roles: ['doctor', 'medicalStaff'],
         },
         {
           id: 'myfiles',
           label: 'My Files & Access',
           desc: 'Manage your documents',
-          icon: FileText,
           roles: ['doctor', 'medicalStaff'],
         },
         {
           id: 'shared',
           label: 'Shared With Me',
           desc: 'Records shared with you',
-          icon: Share2,
           roles: ['doctor', 'medicalStaff', 'patient'],
         },
       ],
@@ -120,21 +95,18 @@ function AppContent({
           id: 'decrypt',
           label: 'Manual Decrypt',
           desc: 'Decrypt a document',
-          icon: Key,
           roles: ['doctor', 'medicalStaff', 'patient'],
         },
         {
           id: 'verify',
           label: 'Verify Document',
           desc: 'Validate document integrity',
-          icon: CheckCircle2,
           roles: ['doctor', 'medicalStaff', 'patient', 'admin'],
         },
         {
           id: 'issue',
           label: 'Issue Certificate',
           desc: 'Create a digital certificate',
-          icon: Award,
           roles: ['doctor'],
         },
       ],
@@ -147,7 +119,6 @@ function AppContent({
           id: 'admin',
           label: 'Role Management',
           desc: 'Onboard & revoke roles',
-          icon: ShieldAlert,
           roles: ['admin'],
         },
       ],
@@ -166,13 +137,12 @@ function AppContent({
   const allTabs = NAV_GROUPS.flatMap((g) => g.items);
   const currentActiveTab = allTabs.find((t) => t.id === activeTab) || allTabs[0] || {
     id: activeTab,
-    label: activeTab,
-    icon: HardDrive
+    label: activeTab
   };
-  const CurrentIcon = currentActiveTab.icon;
+
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
+    <div className="min-h-screen bg-gray-50 text-black flex flex-col justify-between">
       {/* Backdrop Overlay */}
       {isSidebarOpen && (
         <div
@@ -191,18 +161,13 @@ function AppContent({
       >
         {/* Sidebar Header */}
         <div className="h-14 px-4 border-b border-gray-200 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-gray-900 text-white rounded">
-              <HardDrive className="w-4 h-4" />
-            </div>
-            <span className="text-sm font-semibold text-gray-900">BlockDrive</span>
-          </div>
+          <span className="text-sm font-semibold text-black">BlockDrive</span>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="p-1 text-gray-500 hover:text-gray-900 rounded"
+            className="p-1 text-black hover:bg-gray-100 rounded text-xs font-medium cursor-pointer"
             aria-label="Close sidebar"
           >
-            <X className="w-4 h-4" />
+            Close ✕
           </button>
         </div>
 
@@ -210,11 +175,10 @@ function AppContent({
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
           {NAV_GROUPS.map((group) => (
             <div key={group.title} className="space-y-0.5">
-              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-gray-400">
+              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-black">
                 {group.title}
               </div>
               {group.items.map((tab) => {
-                const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 return (
                   <button
@@ -225,22 +189,18 @@ function AppContent({
                     }}
                     className={`w-full flex items-center justify-between px-2.5 py-2 rounded text-left cursor-pointer ${
                       isActive
-                        ? 'bg-gray-100 text-gray-900 font-medium'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        ? 'bg-gray-100 text-black font-semibold'
+                        : 'text-black hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-start gap-2.5 min-w-0">
-                      <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? 'text-gray-900' : 'text-gray-400'}`} />
-                      <div className="min-w-0 flex-1">
-                        <div className={`text-xs ${isActive ? 'font-medium text-gray-900' : 'font-normal text-gray-700'}`}>
-                          {tab.label}
-                        </div>
-                        <p className="text-[11px] text-gray-400 font-normal truncate mt-0.5">
-                          {tab.desc}
-                        </p>
+                    <div className="min-w-0 flex-1">
+                      <div className={`text-xs ${isActive ? 'font-semibold text-black' : 'font-normal text-black'}`}>
+                        {tab.label}
                       </div>
+                      <p className="text-[11px] text-black font-normal truncate mt-0.5 opacity-70">
+                        {tab.desc}
+                      </p>
                     </div>
-                    <ChevronRight className={`w-3.5 h-3.5 shrink-0 ml-1.5 ${isActive ? 'text-gray-700' : 'text-gray-300'}`} />
                   </button>
                 );
               })}
@@ -249,21 +209,20 @@ function AppContent({
         </div>
 
         {/* Sidebar Footer Info & Role Portal Switcher */}
-        <div className="p-3 border-t border-gray-200 text-xs text-gray-600 bg-white flex flex-col gap-2 shrink-0">
+        <div className="p-3 border-t border-gray-200 text-xs text-black bg-white flex flex-col gap-2 shrink-0">
           <button
             onClick={() => {
               setIsSidebarOpen(false);
               onOpenRolePortal();
             }}
-            className="w-full py-1.5 px-3 bg-gray-100 hover:bg-gray-200 rounded text-xs font-medium text-gray-700 flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full py-1.5 px-3 bg-gray-100 hover:bg-gray-200 rounded text-xs font-medium text-black flex items-center justify-center cursor-pointer"
           >
-            <Users className="w-3.5 h-3.5 text-gray-500" />
             <span>Switch Role Portal</span>
           </button>
 
-          <div className="flex items-center justify-between pt-1 border-t border-gray-100 text-xs text-gray-500">
+          <div className="flex items-center justify-between pt-1 border-t border-gray-100 text-xs text-black">
             <span>Status</span>
-            <span className="text-gray-700">{account ? 'Connected' : 'Disconnected'}</span>
+            <span className="text-black font-medium">{account ? 'Connected' : 'Disconnected'}</span>
           </div>
         </div>
       </aside>
@@ -275,39 +234,33 @@ function AppContent({
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open navigation sidebar"
-              className="p-1.5 -ml-1.5 mr-1 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1 text-black hover:bg-gray-100 border border-gray-200 rounded text-xs font-medium cursor-pointer"
             >
-              <Menu className="w-4 h-4" />
-              <span className="text-xs font-medium text-gray-600 hidden md:inline">Menu</span>
+              <span>Menu</span>
             </button>
 
-            <div className="p-1 bg-gray-900 text-white rounded">
-              <HardDrive className="w-4 h-4" />
-            </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-900">BlockDrive</span>
-                <span className="px-1.5 py-0.2 text-[10px] font-medium bg-gray-100 text-gray-600 rounded border border-gray-200">
+                <span className="text-sm font-semibold text-black">BlockDrive</span>
+                <span className="px-1.5 py-0.2 text-[10px] font-medium bg-gray-100 text-black rounded border border-gray-200">
                   v1.0
                 </span>
               </div>
-              <p className="text-xs text-gray-500 hidden sm:block">Decentralized Healthcare Storage</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
             {authUser && (
-              <div className="hidden sm:flex items-center bg-gray-50 border border-gray-200 rounded px-2.5 py-1 text-xs text-gray-700">
+              <div className="hidden sm:flex items-center bg-gray-50 border border-gray-200 rounded px-2.5 py-1 text-xs text-black">
                 <span className="max-w-[160px] truncate">{authUser.email}</span>
               </div>
             )}
 
             <button
               onClick={handleSignOut}
-              className="px-2.5 py-1 bg-white hover:bg-red-50 hover:border-red-200 hover:text-red-700 border border-gray-300 text-gray-700 rounded text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1 bg-white hover:bg-gray-100 border border-gray-300 text-black rounded text-xs font-medium flex items-center cursor-pointer"
               title="Log out and return to choose role page"
             >
-              <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
             </button>
           </div>
@@ -315,7 +268,7 @@ function AppContent({
       </header>
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-4 flex-1 w-full">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-4 flex-1 w-full text-black">
         {/* Auth Modal */}
         <AuthModal
           isOpen={isAuthModalOpen}
@@ -336,19 +289,17 @@ function AppContent({
 
         {/* Page Breadcrumb */}
         <div className="flex items-center justify-between pb-1 border-b border-gray-200">
-          <div className="flex items-center gap-1.5 text-xs text-gray-500">
-            <span className="text-gray-400">BlockDrive</span>
+          <div className="flex items-center gap-1.5 text-xs text-black">
+            <span>BlockDrive</span>
             <span>/</span>
-            <span className="font-medium text-gray-900 flex items-center gap-1.5">
-              <CurrentIcon className="w-3.5 h-3.5 text-gray-500" />
+            <span className="font-semibold text-black">
               {currentActiveTab.label}
             </span>
           </div>
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-900 font-medium px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 cursor-pointer"
+            className="inline-flex items-center text-xs text-black font-medium px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 cursor-pointer"
           >
-            <Menu className="w-3.5 h-3.5" />
             <span>Menu</span>
           </button>
         </div>

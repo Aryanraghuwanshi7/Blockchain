@@ -1,19 +1,4 @@
 import React, { useState } from 'react';
-import {
-  Lock,
-  Mail,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-  ArrowRight,
-  Loader2,
-  Wallet,
-  Stethoscope,
-  Building2,
-  HeartHandshake,
-  ShieldAlert,
-  HardDrive
-} from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
 
 export default function RoleLogin({
@@ -37,31 +22,25 @@ export default function RoleLogin({
   const roleMeta = {
     patient: {
       title: 'Patient Login',
-      icon: HeartHandshake,
       description: 'Access and decrypt medical records shared with you.'
     },
     doctor: {
       title: 'Doctor Login',
-      icon: Stethoscope,
       description: 'Encrypt patient diagnostics, manage access, and issue certificates.'
     },
     medicalStaff: {
       title: 'Medical Staff Login',
-      icon: Building2,
       description: 'Upload documents and maintain hospital records.'
     },
     admin: {
       title: 'Administrator Login',
-      icon: ShieldAlert,
       description: 'Manage users, roles, and smart contract permissions.'
     }
   }[role] || {
     title: 'BlockDrive Login',
-    icon: Lock,
     description: 'Sign in to access your dashboard.'
   };
 
-  const Icon = roleMeta.icon;
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
@@ -160,18 +139,17 @@ export default function RoleLogin({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-between text-gray-900 font-sans">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-between text-black font-sans">
       {/* Top Header */}
       <header className="bg-white border-b border-gray-200 py-3 px-6">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={onBackToRoles}
-            className="inline-flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+            className="inline-flex items-center text-xs font-medium text-black hover:underline px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to roles</span>
+            <span>&larr; Back to roles</span>
           </button>
-          <span className="text-xs font-medium text-gray-500 uppercase">{role}</span>
+          <span className="text-xs font-medium text-black uppercase">{role}</span>
         </div>
       </header>
 
@@ -180,11 +158,8 @@ export default function RoleLogin({
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm space-y-5">
           {/* Header */}
           <div className="text-center space-y-1">
-            <div className="w-10 h-10 rounded bg-gray-100 text-gray-800 flex items-center justify-center mx-auto mb-2">
-              <Icon className="w-5 h-5" />
-            </div>
-            <h1 className="text-lg font-semibold text-gray-900">{roleMeta.title}</h1>
-            <p className="text-xs text-gray-500">{roleMeta.description}</p>
+            <h1 className="text-lg font-semibold text-black">{roleMeta.title}</h1>
+            <p className="text-xs text-black">{roleMeta.description}</p>
           </div>
 
           {/* Auth Method Tabs */}
@@ -192,25 +167,23 @@ export default function RoleLogin({
             <button
               type="button"
               onClick={() => setAuthMethod('wallet')}
-              className={`py-1.5 px-3 rounded transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`py-1.5 px-3 rounded transition-colors cursor-pointer flex items-center justify-center ${
                 authMethod === 'wallet'
-                  ? 'bg-white text-gray-900 shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-black shadow-sm font-medium'
+                  : 'text-black hover:bg-gray-200/60'
               }`}
             >
-              <Wallet className="w-3.5 h-3.5" />
               <span>Connect Wallet</span>
             </button>
             <button
               type="button"
               onClick={() => setAuthMethod('email')}
-              className={`py-1.5 px-3 rounded transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`py-1.5 px-3 rounded transition-colors cursor-pointer flex items-center justify-center ${
                 authMethod === 'email'
-                  ? 'bg-white text-gray-900 shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-black shadow-sm font-medium'
+                  : 'text-black hover:bg-gray-200/60'
               }`}
             >
-              <Mail className="w-3.5 h-3.5" />
               <span>Email Sign In</span>
             </button>
           </div>
@@ -220,8 +193,8 @@ export default function RoleLogin({
             <div
               className={`p-3 rounded text-xs ${
                 message.type === 'error'
-                  ? 'bg-red-50 border border-red-200 text-red-700'
-                  : 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                  ? 'bg-red-50 border border-red-200 text-black'
+                  : 'bg-emerald-50 border border-emerald-200 text-black'
               }`}
             >
               <span>{message.text}</span>
@@ -233,18 +206,18 @@ export default function RoleLogin({
             <div className="space-y-4">
               <div className="bg-gray-50 border border-gray-200 rounded p-3.5 text-xs space-y-1.5">
                 <div className="flex items-center justify-between font-medium">
-                  <span className="text-gray-600">Wallet</span>
-                  <span className={account ? 'text-emerald-600' : 'text-gray-500'}>
+                  <span className="text-black">Wallet</span>
+                  <span className="text-black font-medium">
                     {account ? 'Connected' : 'Not connected'}
                   </span>
                 </div>
 
                 {account ? (
-                  <div className="font-mono text-[11px] text-gray-700 bg-white border border-gray-200 p-2 rounded break-all select-all">
+                  <div className="font-mono text-[11px] text-black bg-white border border-gray-200 p-2 rounded break-all select-all">
                     {account}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-xs">
+                  <p className="text-black text-xs">
                     Connect your MetaMask wallet to access the decentralized network.
                   </p>
                 )}
@@ -254,29 +227,18 @@ export default function RoleLogin({
                 <button
                   type="button"
                   onClick={handleQuickEnter}
-                  className="w-full py-2 px-4 bg-gray-900 hover:bg-black text-white font-medium rounded text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded text-xs transition-colors flex items-center justify-center cursor-pointer"
                 >
                   <span>Open Dashboard</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={onConnectWallet}
                   disabled={isConnectingWallet}
-                  className="w-full py-2 px-4 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white font-medium rounded text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 px-4 bg-black hover:bg-gray-900 disabled:bg-gray-400 text-white font-medium rounded text-xs transition-colors flex items-center justify-center cursor-pointer"
                 >
-                  {isConnectingWallet ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Connecting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Wallet className="w-3.5 h-3.5" />
-                      <span>Connect MetaMask Wallet</span>
-                    </>
-                  )}
+                  <span>{isConnectingWallet ? 'Connecting...' : 'Connect MetaMask Wallet'}</span>
                 </button>
               )}
             </div>
@@ -286,7 +248,7 @@ export default function RoleLogin({
           {authMethod === 'email' && (
             <form onSubmit={handleEmailAuth} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-black mb-1">
                   Email Address
                 </label>
                 <input
@@ -295,12 +257,12 @@ export default function RoleLogin({
                   placeholder="name@hospital.org"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 rounded px-3 py-1.5 text-xs text-gray-900 outline-none"
+                  className="w-full bg-white border border-gray-300 focus:border-black rounded px-3 py-1.5 text-xs text-black outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-black mb-1">
                   Password
                 </label>
                 <div className="relative">
@@ -310,21 +272,21 @@ export default function RoleLogin({
                     placeholder="Enter password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 rounded px-3 py-1.5 text-xs text-gray-900 outline-none pr-8"
+                    className="w-full bg-white border border-gray-300 focus:border-black rounded px-3 py-1.5 text-xs text-black outline-none pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black text-xs px-1 hover:underline cursor-pointer"
                   >
-                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
 
               {emailMode === 'signUp' && (
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-black mb-1">
                     Confirm Password
                   </label>
                   <input
@@ -333,7 +295,7 @@ export default function RoleLogin({
                     placeholder="Repeat password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-white border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 rounded px-3 py-1.5 text-xs text-gray-900 outline-none"
+                    className="w-full bg-white border border-gray-300 focus:border-black rounded px-3 py-1.5 text-xs text-black outline-none"
                   />
                 </div>
               )}
@@ -341,21 +303,14 @@ export default function RoleLogin({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2 px-4 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white font-medium rounded text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2 px-4 bg-black hover:bg-gray-900 disabled:bg-gray-400 text-white font-medium rounded text-xs transition-colors flex items-center justify-center cursor-pointer"
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Signing in...</span>
-                  </>
-                ) : (
-                  <span>{emailMode === 'signIn' ? 'Sign In' : 'Create Account'}</span>
-                )}
+                <span>{isLoading ? 'Signing in...' : emailMode === 'signIn' ? 'Sign In' : 'Create Account'}</span>
               </button>
 
               {role !== 'patient' ? (
                 <div className="text-center pt-1">
-                  <p className="text-[11px] text-gray-500">
+                  <p className="text-[11px] text-black">
                     {role === 'doctor' ? 'Doctor' : role === 'medicalStaff' ? 'Staff' : 'Administrator'} accounts are created by the Hospital Admin.
                   </p>
                 </div>
@@ -364,7 +319,7 @@ export default function RoleLogin({
                   <button
                     type="button"
                     onClick={() => setEmailMode(emailMode === 'signIn' ? 'signUp' : 'signIn')}
-                    className="text-xs text-gray-500 hover:text-gray-900 underline cursor-pointer"
+                    className="text-xs text-black hover:underline cursor-pointer"
                   >
                     {emailMode === 'signIn' ? "New patient? Register here" : "Already have an account? Sign In"}
                   </button>
@@ -374,22 +329,21 @@ export default function RoleLogin({
           )}
 
           {/* Quick Direct Enter (Demo / Testing option) */}
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-black">
             <span>Direct demo mode:</span>
             <button
               type="button"
               onClick={handleQuickEnter}
-              className="text-gray-700 hover:text-black font-medium hover:underline cursor-pointer flex items-center gap-1"
+              className="text-black font-medium hover:underline cursor-pointer"
             >
-              <span>Continue as {role}</span>
-              <ArrowRight className="w-3 h-3" />
+              <span>Continue as {role} &rarr;</span>
             </button>
           </div>
         </div>
       </main>
 
       {/* Simple Footer */}
-      <footer className="bg-white border-t border-gray-200 py-3 text-center text-xs text-gray-400">
+      <footer className="bg-white border-t border-gray-200 py-3 text-center text-xs text-black">
         BlockDrive • Decentralized Storage
       </footer>
     </div>

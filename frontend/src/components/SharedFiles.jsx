@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { 
-  Users, 
-  Search, 
-  Download, 
-  Unlock, 
-  Loader2, 
-  FileText, 
-  HardDrive, 
-  Calendar, 
-  ShieldCheck, 
-  Copy, 
-  CheckCheck,
-  AlertCircle
-} from 'lucide-react';
 import { getFileRegistryContract } from '../utils/contracts';
 import { downloadFromIPFS } from '../utils/ipfs';
 import { unwrapKeyForRecipient, decryptFile, importRawKey } from '../utils/crypto';
@@ -240,57 +226,45 @@ export default function SharedFiles({ signer, account, userKeys }) {
     return (
       <div
         key={fileId}
-        className="p-4 bg-slate-50/50 hover:bg-slate-50/90 border border-slate-200 hover:border-slate-300 rounded-lg space-y-3 shadow-2xs interactive-lift-subtle"
+        className="p-4 bg-gray-50/50 hover:bg-gray-50 border border-gray-200 rounded-lg space-y-3 text-black"
       >
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-start gap-3 min-w-0 flex-1">
-            <div className="p-2 bg-white text-slate-700 rounded-md border border-slate-200 shrink-0 mt-0.5 transition-transform duration-150 hover:scale-105">
-              <FileText className="w-4 h-4" />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-semibold text-black truncate" title={fileName}>
+                {fileName}
+              </h4>
+              <span className="px-1.5 py-0.5 bg-gray-100 text-black border border-gray-200 text-[10px] font-medium rounded">
+                Authorized
+              </span>
             </div>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h4 className="text-sm font-semibold text-slate-900 truncate" title={fileName}>
-                  {fileName}
-                </h4>
-                <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-medium rounded flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600" /> Authorized
-                </span>
-              </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-black mt-1">
+              <span className="font-medium text-black">
+                {fileSize}
+              </span>
+              <span>•</span>
+              <span>
+                {uploadDate}
+              </span>
+              <span>•</span>
+              <span className="text-black">
+                Owner: <code className="font-mono text-black text-[11px] bg-white border border-gray-200 px-1.5 py-0.5 rounded select-all">{owner.substring(0, 6)}...{owner.substring(owner.length - 4)}</code>
+              </span>
+            </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
-                <span className="flex items-center gap-1 font-medium text-slate-600">
-                  <HardDrive className="w-3.5 h-3.5 text-slate-400" />
-                  {fileSize}
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                  {uploadDate}
-                </span>
-                <span>•</span>
-                <span className="text-slate-600">
-                  Owner: <code className="font-mono text-slate-800 text-[11px] bg-white border border-slate-200 px-1.5 py-0.5 rounded select-all">{owner.substring(0, 6)}...{owner.substring(owner.length - 4)}</code>
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-[11px] font-semibold text-slate-500 uppercase">File ID:</span>
-                <code className="text-xs font-mono text-slate-800 bg-white border border-slate-200 px-1.5 py-0.5 rounded select-all">
-                  {fileId.substring(0, 10)}...{fileId.substring(fileId.length - 8)}
-                </code>
-                <button
-                  onClick={() => copyToClipboard(fileId, fileId)}
-                  title="Copy full File ID"
-                  className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-all cursor-pointer active:scale-90"
-                >
-                  {copiedId === fileId ? (
-                    <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[11px] font-semibold text-black uppercase">File ID:</span>
+              <code className="text-xs font-mono text-black bg-white border border-gray-200 px-1.5 py-0.5 rounded select-all">
+                {fileId.substring(0, 10)}...{fileId.substring(fileId.length - 8)}
+              </code>
+              <button
+                onClick={() => copyToClipboard(fileId, fileId)}
+                title="Copy full File ID"
+                className="text-xs text-black underline px-1 cursor-pointer"
+              >
+                {copiedId === fileId ? '[Copied]' : '[Copy]'}
+              </button>
             </div>
           </div>
 
@@ -300,29 +274,24 @@ export default function SharedFiles({ signer, account, userKeys }) {
               <a
                 href={dlUrl}
                 download={fileName}
-                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-xs hover:shadow-sm"
+                className="px-3.5 py-1.5 bg-black hover:bg-gray-900 text-white rounded-md text-xs font-medium cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5" /> Save File
+                Save File
               </a>
             ) : (
               <button
                 onClick={() => handleDecryptFile(fileId)}
                 disabled={isDecrypting}
-                className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-xs hover:shadow-sm"
+                className="px-3.5 py-1.5 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-md text-xs font-medium cursor-pointer"
               >
-                {isDecrypting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Unlock className="w-3.5 h-3.5" />
-                )}
-                {isDecrypting ? 'Decrypting...' : 'Decrypt & Download'}
+                <span>{isDecrypting ? 'Decrypting...' : 'Decrypt & Download'}</span>
               </button>
             )}
           </div>
         </div>
 
         {statusMsg && (
-          <div className="text-xs font-mono text-slate-700 bg-white p-2.5 rounded-md border border-slate-200 hover:border-slate-300 transition-colors">
+          <div className="text-xs font-mono text-black bg-white p-2.5 rounded-md border border-gray-200">
             {statusMsg}
           </div>
         )}
@@ -331,12 +300,12 @@ export default function SharedFiles({ signer, account, userKeys }) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 text-black">
       {/* 1. Explore Files by Owner Address */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
-        <div className="border-b border-slate-100 pb-3 mb-3.5">
-          <h3 className="text-sm font-semibold text-slate-900">Query Accessible Documents by Owner</h3>
-          <p className="text-xs text-slate-500 mt-0.5 font-normal">
+      <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6 text-black">
+        <div className="border-b border-gray-100 pb-3 mb-3.5">
+          <h3 className="text-sm font-semibold text-black">Query Accessible Documents by Owner</h3>
+          <p className="text-xs text-black mt-0.5 font-normal">
             Query the smart contract for files authorized to your wallet by a specific healthcare data owner.
           </p>
         </div>
@@ -347,26 +316,24 @@ export default function SharedFiles({ signer, account, userKeys }) {
             placeholder="Owner wallet address (0x...)"
             value={searchOwnerAddress}
             onChange={(e) => setSearchOwnerAddress(e.target.value)}
-            className="flex-1 bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md px-3 py-2 text-xs font-mono text-slate-900 outline-none placeholder:text-slate-400 transition-all duration-150"
+            className="flex-1 bg-white border border-gray-300 focus:border-black rounded-md px-3 py-2 text-xs font-mono text-black outline-none"
           />
           <button
             type="submit"
             disabled={isSearching || !searchOwnerAddress.trim() || !signer}
-            className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-md text-xs font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-2xs"
+            className="px-3.5 py-2 bg-black hover:bg-gray-900 disabled:bg-gray-200 disabled:text-black text-white rounded-md text-xs font-medium cursor-pointer"
           >
-            {isSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
             <span>{isSearching ? 'Querying...' : 'Search Files'}</span>
           </button>
         </form>
 
         {searchResults !== null && (
-          <div className="mt-4 pt-3.5 border-t border-slate-100">
-            <h4 className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2.5">
+          <div className="mt-4 pt-3.5 border-t border-gray-100">
+            <h4 className="text-xs font-medium text-black uppercase tracking-wider mb-2.5">
               Accessible Records ({searchResults.length}):
             </h4>
             {searchResults.length === 0 ? (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-600 flex items-center gap-2 font-normal">
-                <AlertCircle className="w-4 h-4 text-slate-400 shrink-0" />
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-xs text-black font-normal">
                 <span>No accessible documents registered under this address for your wallet.</span>
               </div>
             ) : (
@@ -379,29 +346,27 @@ export default function SharedFiles({ signer, account, userKeys }) {
       </div>
 
       {/* 2. Files Shared With Connected Wallet */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3.5">
+      <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6 text-black">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3.5">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Incoming Shared Documents</h3>
-            <p className="text-xs text-slate-500 mt-0.5 font-normal">
+            <h3 className="text-sm font-semibold text-black">Incoming Shared Documents</h3>
+            <p className="text-xs text-black mt-0.5 font-normal">
               Documents that doctors or hospital staff have authorized your wallet to decrypt.
             </p>
           </div>
           <button
             onClick={loadSharedFiles}
             disabled={loading}
-            className="text-xs px-2.5 py-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 rounded-md border border-slate-200 font-medium transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            className="text-xs px-2.5 py-1.5 bg-white hover:bg-gray-50 text-black rounded-md border border-gray-200 font-medium cursor-pointer"
           >
-            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
             <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
           </button>
         </div>
 
         {sharedFileIds.length === 0 ? (
-          <div className="py-8 text-center bg-slate-50/50 rounded-lg border border-dashed border-slate-200 p-5">
-            <Users className="w-7 h-7 text-slate-400 mx-auto mb-1.5" />
-            <h4 className="text-sm font-semibold text-slate-800">No Incoming Shared Files</h4>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto font-normal">
+          <div className="py-8 text-center bg-gray-50/50 rounded-lg border border-dashed border-gray-200 p-5">
+            <h4 className="text-sm font-semibold text-black">No Incoming Shared Files</h4>
+            <p className="text-xs text-black mt-1 max-w-sm mx-auto font-normal">
               When a practitioner grants your address access to their encrypted document, it will appear here.
             </p>
           </div>
@@ -417,3 +382,4 @@ export default function SharedFiles({ signer, account, userKeys }) {
     </div>
   );
 }
+

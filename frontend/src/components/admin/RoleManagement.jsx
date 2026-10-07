@@ -1,31 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
-import {
-  ShieldCheck,
-  UserPlus,
-  Users,
-  Stethoscope,
-  Building2,
-  HeartHandshake,
-  Key,
-  Copy,
-  Check,
-  RefreshCw,
-  Search,
-  Trash2,
-  Lock,
-  Mail,
-  User,
-  ShieldAlert,
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  Sparkles,
-  ExternalLink,
-  Wallet
-} from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../../utils/supabaseClient';
 import { useRole } from '../../context/RoleContext';
@@ -296,62 +270,54 @@ export default function RoleManagement({ signer, account }) {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-black">
       {/* Top Banner & Header */}
-      <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-            <ShieldAlert className="w-5 h-5" />
+      <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-black">Hospital Administration Dashboard</h2>
+            <span className="text-[11px] font-medium bg-gray-100 text-black border border-gray-200 px-2 py-0.5 rounded-full">
+              Admin Control
+            </span>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-semibold text-slate-900">Hospital Administration Dashboard</h2>
-              <span className="text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full">
-                Admin Control
-              </span>
-            </div>
-            <p className="text-xs font-normal text-slate-500 mt-0.5">
-              Provision healthcare practitioner IDs, generate user credentials, and supervise smart contract access.
-            </p>
-          </div>
+          <p className="text-xs font-normal text-black mt-0.5 opacity-75">
+            Provision healthcare practitioner IDs, generate user credentials, and supervise smart contract access.
+          </p>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium self-start sm:self-center">
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg border border-gray-200 text-xs font-medium self-start sm:self-center">
           <button
             type="button"
             onClick={() => setActiveAdminView('directory')}
-            className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-md cursor-pointer flex items-center ${
               activeAdminView === 'directory'
-                ? 'bg-white text-slate-900 shadow-2xs font-medium'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-black font-semibold shadow-xs'
+                : 'text-black hover:bg-gray-200/50'
             }`}
           >
-            <Users className="w-3.5 h-3.5 text-slate-500" />
             <span>User Directory ({totalUsers})</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveAdminView('create')}
-            className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-md cursor-pointer flex items-center ${
               activeAdminView === 'create'
-                ? 'bg-white text-slate-900 shadow-2xs font-medium'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-black font-semibold shadow-xs'
+                : 'text-black hover:bg-gray-200/50'
             }`}
           >
-            <UserPlus className="w-3.5 h-3.5 text-slate-500" />
             <span>Create Account</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveAdminView('blockchain')}
-            className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-md cursor-pointer flex items-center ${
               activeAdminView === 'blockchain'
-                ? 'bg-white text-slate-900 shadow-2xs font-medium'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-black font-semibold shadow-xs'
+                : 'text-black hover:bg-gray-200/50'
             }`}
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
             <span>Blockchain RBAC</span>
           </button>
         </div>
@@ -359,52 +325,38 @@ export default function RoleManagement({ signer, account }) {
 
       {/* KPI Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-normal text-slate-500">Total System Users</span>
-            <Users className="w-4 h-4 text-slate-400" />
-          </div>
-          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalUsers}</div>
-          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Active across all roles</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-3.5 text-black">
+          <span className="text-xs font-normal text-black">Total System Users</span>
+          <div className="text-xl font-semibold text-black mt-1.5">{totalUsers}</div>
+          <span className="text-[11px] font-normal text-black mt-0.5 block opacity-60">Active across all roles</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-normal text-slate-600">Doctors</span>
-            <Stethoscope className="w-4 h-4 text-blue-500" />
-          </div>
-          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalDoctors}</div>
-          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Clinical practitioners</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-3.5 text-black">
+          <span className="text-xs font-normal text-black">Doctors</span>
+          <div className="text-xl font-semibold text-black mt-1.5">{totalDoctors}</div>
+          <span className="text-[11px] font-normal text-black mt-0.5 block opacity-60">Clinical practitioners</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-normal text-slate-600">Medical Staff</span>
-            <Building2 className="w-4 h-4 text-teal-600" />
-          </div>
-          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalStaff}</div>
-          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Hospital archive staff</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-3.5 text-black">
+          <span className="text-xs font-normal text-black">Medical Staff</span>
+          <div className="text-xl font-semibold text-black mt-1.5">{totalStaff}</div>
+          <span className="text-[11px] font-normal text-black mt-0.5 block opacity-60">Hospital archive staff</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-normal text-slate-600">Patients</span>
-            <HeartHandshake className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalPatients}</div>
-          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Secure record holders</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-3.5 text-black">
+          <span className="text-xs font-normal text-black">Patients</span>
+          <div className="text-xl font-semibold text-black mt-1.5">{totalPatients}</div>
+          <span className="text-[11px] font-normal text-black mt-0.5 block opacity-60">Secure record holders</span>
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* VIEW 1: USER DIRECTORY                                                    */}
-      {/* ========================================================================= */}
+      {/* VIEW 1: USER DIRECTORY */}
       {activeAdminView === 'directory' && (
-        <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-5 space-y-4 text-black">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Provisioned Healthcare Directory</h3>
-              <p className="text-xs font-normal text-slate-500 mt-0.5">
+              <h3 className="text-sm font-semibold text-black">Provisioned Healthcare Directory</h3>
+              <p className="text-xs font-normal text-black mt-0.5 opacity-75">
                 All accounts created by the administrator. Doctors, staff, and patients use these credentials to log in.
               </p>
             </div>
@@ -414,17 +366,15 @@ export default function RoleManagement({ signer, account }) {
                 type="button"
                 onClick={loadProfiles}
                 disabled={loadingProfiles}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
+                className="text-xs font-medium text-black bg-white hover:bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${loadingProfiles ? 'animate-spin' : ''}`} />
-                <span>Refresh</span>
+                <span>{loadingProfiles ? 'Refreshing...' : 'Refresh'}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveAdminView('create')}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs interactive-lift-subtle"
+                className="text-xs font-medium text-white bg-black hover:bg-gray-900 px-3 py-1.5 rounded-lg cursor-pointer"
               >
-                <UserPlus className="w-3.5 h-3.5" />
                 <span>Add User</span>
               </button>
             </div>
@@ -433,13 +383,12 @@ export default function RoleManagement({ signer, account }) {
           {/* Search & Filter Strip */}
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             <div className="relative flex-1 max-w-sm">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search by name, email, or wallet..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400"
+                className="w-full bg-white border border-gray-300 focus:border-black rounded-lg px-3 py-1.5 text-xs text-black outline-none"
               />
             </div>
 
@@ -451,8 +400,8 @@ export default function RoleManagement({ signer, account }) {
                   onClick={() => setRoleFilter(r)}
                   className={`px-2.5 py-1 rounded text-xs font-medium cursor-pointer capitalize ${
                     roleFilter === r
-                      ? 'bg-white text-gray-900 font-semibold border border-gray-300 shadow-xs'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-white text-black font-semibold border border-gray-300 shadow-xs'
+                      : 'bg-gray-100 text-black hover:bg-gray-200'
                   }`}
                 >
                   {r === 'medicalStaff' ? 'Staff' : r}
@@ -462,9 +411,9 @@ export default function RoleManagement({ signer, account }) {
           </div>
 
           {/* User Table */}
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
+              <thead className="bg-gray-50 text-black font-medium border-b border-gray-200">
                 <tr>
                   <th className="py-2.5 px-3.5">Practitioner / User</th>
                   <th className="py-2.5 px-3.5">Email (Login ID)</th>
@@ -474,19 +423,16 @@ export default function RoleManagement({ signer, account }) {
                   <th className="py-2.5 px-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-gray-100 text-black">
                 {filteredProfiles.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-slate-400">
+                    <td colSpan={6} className="py-8 text-center text-black">
                       {loadingProfiles ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
-                          <span>Loading users...</span>
-                        </div>
+                        <span>Loading users...</span>
                       ) : (
                         <div>
-                          <p className="font-medium text-slate-600">No users found.</p>
-                          <p className="text-[11px] font-normal text-slate-400 mt-1">
+                          <p className="font-medium text-black">No users found.</p>
+                          <p className="text-[11px] font-normal text-black mt-1 opacity-60">
                             Click "Add User" above to create credentials for a Doctor, Patient, or Staff member.
                           </p>
                         </div>
@@ -495,85 +441,75 @@ export default function RoleManagement({ signer, account }) {
                   </tr>
                 ) : (
                   filteredProfiles.map((p) => {
-                    const roleBadge = {
-                      doctor: { label: 'Doctor', color: 'bg-blue-50 text-blue-700 border-blue-200', icon: Stethoscope },
-                      medicalStaff: { label: 'Medical Staff', color: 'bg-teal-50 text-teal-700 border-teal-200', icon: Building2 },
-                      patient: { label: 'Patient', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: HeartHandshake },
-                      admin: { label: 'Administrator', color: 'bg-indigo-50 text-indigo-700 border-indigo-200', icon: ShieldAlert }
-                    }[p.role] || { label: p.role, color: 'bg-slate-100 text-slate-700 border-slate-200', icon: User };
-
-                    const RoleIcon = roleBadge.icon;
+                    const roleLabel = {
+                      doctor: 'Doctor',
+                      medicalStaff: 'Medical Staff',
+                      patient: 'Patient',
+                      admin: 'Administrator'
+                    }[p.role] || p.role;
 
                     return (
-                      <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-2.5 px-3.5 font-medium text-slate-900 flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 font-medium uppercase text-[11px]">
-                            {(p.full_name || p.email || 'U').charAt(0)}
-                          </div>
+                      <tr key={p.id} className="hover:bg-gray-50/70">
+                        <td className="py-2.5 px-3.5 font-medium text-black">
                           <span>{p.full_name || 'Healthcare User'}</span>
                         </td>
                         <td className="py-2.5 px-3.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-slate-800">{p.email}</span>
+                            <span className="font-mono text-black">{p.email}</span>
                             <button
                               type="button"
                               onClick={() => copyToClipboard(p.email, `email_${p.id}`)}
-                              className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
+                              className="text-black hover:underline text-[11px] px-1 cursor-pointer"
                               title="Copy Email ID"
                             >
-                              {copiedKey === `email_${p.id}` ? (
-                                <Check className="w-3 h-3 text-emerald-600" />
-                              ) : (
-                                <Copy className="w-3 h-3" />
-                              )}
+                              {copiedKey === `email_${p.id}` ? '[Copied]' : '[Copy]'}
                             </button>
                           </div>
                         </td>
                         <td className="py-2.5 px-3.5">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${roleBadge.color}`}>
-                            <RoleIcon className="w-3 h-3" />
-                            <span>{roleBadge.label}</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border border-gray-200 bg-gray-50 text-black">
+                            <span>{roleLabel}</span>
                           </span>
                         </td>
                         <td className="py-2.5 px-3.5">
                           {p.wallet_address ? (
-                            <div className="flex items-center gap-1 font-mono text-[11px] text-slate-600">
+                            <div className="flex items-center gap-1 font-mono text-[11px] text-black">
                               <span>{p.wallet_address.slice(0, 6)}...{p.wallet_address.slice(-4)}</span>
                               <button
                                 type="button"
                                 onClick={() => copyToClipboard(p.wallet_address, `wallet_${p.id}`)}
-                                className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
+                                className="text-black hover:underline text-[11px] px-1 cursor-pointer"
                               >
-                                {copiedKey === `wallet_${p.id}` ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                                {copiedKey === `wallet_${p.id}` ? '[Copied]' : '[Copy]'}
                               </button>
                             </div>
                           ) : (
-                            <span className="text-[11px] text-slate-400 italic font-normal">Not linked</span>
+                            <span className="text-[11px] text-black opacity-50 italic font-normal">Not linked</span>
                           )}
                         </td>
-                        <td className="py-2.5 px-3.5 text-slate-500 text-[11px] font-normal">
+                        <td className="py-2.5 px-3.5 text-black text-[11px] font-normal">
                           {p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}
                         </td>
                         <td className="py-2.5 px-3.5 text-right">
-                          <div className="inline-flex items-center gap-1">
+                          <div className="inline-flex items-center gap-2">
                             {p.wallet_address && (
                               <button
                                 type="button"
                                 onClick={() => handleBlockchainOnboard(p.role, p.wallet_address)}
-                                className="p-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded cursor-pointer transition-colors"
+                                className="text-black hover:underline text-xs cursor-pointer"
                                 title="Sync On-Chain Role"
                               >
-                                <ShieldCheck className="w-3.5 h-3.5" />
+                                [Sync]
                               </button>
                             )}
                             {p.role !== 'admin' && (
                               <button
                                 type="button"
                                 onClick={() => handleDeleteProfile(p.id, p.email)}
-                                className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded cursor-pointer transition-colors"
+                                className="text-black hover:underline text-xs cursor-pointer"
                                 title="Remove User Profile"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                [Delete]
                               </button>
                             )}
                           </div>
@@ -588,36 +524,26 @@ export default function RoleManagement({ signer, account }) {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* VIEW 2: CREATE USER CREDENTIALS (ID + PASSWORD GENERATOR)                 */}
-      {/* ========================================================================= */}
+      {/* VIEW 2: CREATE USER CREDENTIALS (ID + PASSWORD GENERATOR) */}
       {activeAdminView === 'create' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-black">
           {/* Create Form */}
-          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs space-y-5">
+          <div className="lg:col-span-2 bg-white border border-gray-200 rounded-lg p-4 sm:p-5 space-y-5 text-black">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-slate-700" />
-                <span>Create Healthcare Practitioner Account</span>
-              </h3>
-              <p className="text-xs font-normal text-slate-500 mt-0.5">
+              <h3 className="text-sm font-semibold text-black">Create Healthcare Practitioner Account</h3>
+              <p className="text-xs font-normal text-black mt-0.5 opacity-75">
                 Generate login credentials for Doctors, Patients, or Medical Staff. The user will use this Email ID and Password to sign in.
               </p>
             </div>
 
             {createMessage.text && (
               <div
-                className={`p-3 rounded-lg text-xs flex items-start gap-2.5 ${
+                className={`p-3 rounded-lg text-xs ${
                   createMessage.type === 'error'
-                    ? 'bg-rose-50 border border-rose-200 text-rose-800'
-                    : 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                    ? 'bg-red-50 border border-red-200 text-black'
+                    : 'bg-emerald-50 border border-emerald-200 text-black'
                 }`}
               >
-                {createMessage.type === 'error' ? (
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                ) : (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                )}
                 <span>{createMessage.text}</span>
               </div>
             )}
@@ -625,16 +551,15 @@ export default function RoleManagement({ signer, account }) {
             <form onSubmit={handleCreateUser} className="space-y-4">
               {/* Role Selection */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1.5">
+                <label className="block text-xs font-medium text-black mb-1.5">
                   Select User Role
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: 'doctor', title: 'Doctor', icon: Stethoscope },
-                    { id: 'medicalStaff', title: 'Medical Staff', icon: Building2 },
-                    { id: 'patient', title: 'Patient', icon: HeartHandshake }
+                    { id: 'doctor', title: 'Doctor' },
+                    { id: 'medicalStaff', title: 'Medical Staff' },
+                    { id: 'patient', title: 'Patient' }
                   ].map((r) => {
-                    const RIcon = r.icon;
                     const isSelected = newUserRole === r.id;
                     return (
                       <button
@@ -643,17 +568,14 @@ export default function RoleManagement({ signer, account }) {
                         onClick={() => setNewUserRole(r.id)}
                         className={`p-3 rounded-lg border text-left cursor-pointer flex flex-col justify-between gap-1.5 ${
                           isSelected
-                            ? 'border-gray-500 bg-gray-50 text-gray-900 ring-1 ring-gray-400 font-medium'
-                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                            ? 'border-black bg-gray-50 text-black font-semibold'
+                            : 'bg-white border-gray-200 text-black hover:bg-gray-50'
                         }`}
                       >
-                        <RIcon className={`w-4 h-4 ${isSelected ? 'text-gray-900' : 'text-slate-500'}`} />
-                        <div>
-                          <div className="text-xs font-medium">{r.title}</div>
-                          <span className="text-[10px] font-normal text-slate-400">
-                            {r.id === 'doctor' ? 'Clinical & Certificates' : r.id === 'medicalStaff' ? 'Hospital Archives' : 'Health Records'}
-                          </span>
-                        </div>
+                        <div className="text-xs font-medium">{r.title}</div>
+                        <span className="text-[10px] font-normal text-black opacity-60">
+                          {r.id === 'doctor' ? 'Clinical & Certificates' : r.id === 'medicalStaff' ? 'Hospital Archives' : 'Health Records'}
+                        </span>
                       </button>
                     );
                   })}
@@ -662,163 +584,141 @@ export default function RoleManagement({ signer, account }) {
 
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-black mb-1">
                   Full Name / Practitioner Title
                 </label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Dr. Jane Smith / John Doe"
-                    value={newUserName}
-                    onChange={(e) => setNewUserName(e.target.value)}
-                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400"
-                  />
-                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Dr. Jane Smith / John Doe"
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                  className="w-full bg-white border border-gray-300 focus:border-black rounded-lg px-3 py-2 text-xs text-black outline-none"
+                />
               </div>
 
               {/* Email (Login ID) */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-black mb-1">
                   Healthcare Email (Login ID)
                 </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    required
-                    placeholder="e.g. doctor.smith@hospital.org"
-                    value={newUserEmail}
-                    onChange={(e) => setNewUserEmail(e.target.value)}
-                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400"
-                  />
-                </div>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. doctor.smith@hospital.org"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                  className="w-full bg-white border border-gray-300 focus:border-black rounded-lg px-3 py-2 text-xs text-black outline-none"
+                />
               </div>
 
               {/* Password & Generator */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-slate-700">
+                  <label className="block text-xs font-medium text-black">
                     Account Password
                   </label>
                   <button
                     type="button"
                     onClick={generatePassword}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 hover:underline cursor-pointer"
+                    className="text-[11px] font-medium text-black underline cursor-pointer"
                   >
-                    <Sparkles className="w-3 h-3 text-slate-400" />
-                    <span>Generate Secure Password</span>
+                    Generate Secure Password
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
                     placeholder="Enter or generate temporary password"
                     value={newUserPassword}
                     onChange={(e) => setNewUserPassword(e.target.value)}
-                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-9 py-2 text-xs text-slate-900 outline-none transition-all font-mono placeholder:text-slate-400"
+                    className="w-full bg-white border border-gray-300 focus:border-black rounded-lg px-3 py-2 text-xs text-black outline-none pr-14 font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black text-xs px-1 hover:underline cursor-pointer"
                   >
-                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
 
               {/* Optional Wallet Address */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-black mb-1">
                   Optional Ethereum Wallet Address (0x...)
                 </label>
-                <div className="relative">
-                  <Wallet className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="0x... (Optional, for blockchain verification)"
-                    value={newUserWallet}
-                    onChange={(e) => setNewUserWallet(e.target.value)}
-                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all font-mono placeholder:text-slate-400"
-                  />
-                </div>
+                <input
+                  type="text"
+                  placeholder="0x... (Optional, for blockchain verification)"
+                  value={newUserWallet}
+                  onChange={(e) => setNewUserWallet(e.target.value)}
+                  className="w-full bg-white border border-gray-300 focus:border-black rounded-lg px-3 py-2 text-xs text-black outline-none font-mono"
+                />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isCreatingUser}
-                className="w-full py-2 px-4 bg-slate-900 hover:bg-slate-800 active:scale-95 disabled:bg-slate-300 text-white font-medium rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer interactive-lift-subtle"
+                className="w-full py-2 px-4 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white font-medium rounded-lg text-xs flex items-center justify-center cursor-pointer"
               >
-                {isCreatingUser ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Provisioning Account in Database...</span>
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4" />
-                    <span>Create & Authorize {newUserRole.charAt(0).toUpperCase() + newUserRole.slice(1)} Account</span>
-                  </>
-                )}
+                <span>{isCreatingUser ? 'Provisioning Account...' : `Create & Authorize ${newUserRole.charAt(0).toUpperCase() + newUserRole.slice(1)} Account`}</span>
               </button>
             </form>
           </div>
 
           {/* Right Column: Generated Credentials Card */}
-          <div className="space-y-4">
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 sm:p-5 space-y-4">
-              <h4 className="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
-                <Key className="w-3.5 h-3.5 text-slate-600" />
-                <span>Credentials Handout Slip</span>
+          <div className="space-y-4 text-black">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-5 space-y-4 text-black">
+              <h4 className="text-xs font-semibold text-black">
+                Credentials Handout Slip
               </h4>
-              <p className="text-xs font-normal text-slate-500 leading-relaxed">
+              <p className="text-xs font-normal text-black opacity-75">
                 When you create an account, copy the credentials below to provide to the doctor, patient, or staff member.
               </p>
 
               {lastCreatedCredentials ? (
-                <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3 shadow-2xs">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                    <span className="text-[11px] font-medium text-emerald-700">Ready for Use</span>
-                    <span className="text-[10px] bg-slate-100 font-mono px-2 py-0.5 rounded text-slate-700 capitalize">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                    <span className="text-[11px] font-medium text-black">Ready for Use</span>
+                    <span className="text-[10px] bg-gray-100 font-mono px-2 py-0.5 rounded text-black capitalize">
                       {lastCreatedCredentials.role}
                     </span>
                   </div>
 
                   <div className="space-y-2 text-xs">
                     <div>
-                      <span className="text-[10px] font-medium text-slate-400 block">Name</span>
-                      <span className="font-medium text-slate-900">{lastCreatedCredentials.name}</span>
+                      <span className="text-[10px] font-medium text-black opacity-60 block">Name</span>
+                      <span className="font-medium text-black">{lastCreatedCredentials.name}</span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-medium text-slate-400 block">Login Email ID</span>
-                      <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded border border-slate-100 font-mono text-[11px] mt-0.5">
+                      <span className="text-[10px] font-medium text-black opacity-60 block">Login Email ID</span>
+                      <div className="flex items-center justify-between bg-gray-50 p-1.5 rounded border border-gray-200 font-mono text-[11px] mt-0.5">
                         <span>{lastCreatedCredentials.email}</span>
                         <button
                           type="button"
                           onClick={() => copyToClipboard(lastCreatedCredentials.email, 'last_email')}
-                          className="text-slate-500 hover:text-slate-900 p-0.5 cursor-pointer"
+                          className="text-black hover:underline text-[11px] px-1 cursor-pointer"
                         >
-                          {copiedKey === 'last_email' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          {copiedKey === 'last_email' ? '[Copied]' : '[Copy]'}
                         </button>
                       </div>
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-medium text-slate-400 block">Password</span>
-                      <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded border border-slate-100 font-mono text-[11px] mt-0.5">
+                      <span className="text-[10px] font-medium text-black opacity-60 block">Password</span>
+                      <div className="flex items-center justify-between bg-gray-50 p-1.5 rounded border border-gray-200 font-mono text-[11px] mt-0.5">
                         <span>{lastCreatedCredentials.password}</span>
                         <button
                           type="button"
                           onClick={() => copyToClipboard(lastCreatedCredentials.password, 'last_pwd')}
-                          className="text-slate-500 hover:text-slate-900 p-0.5 cursor-pointer"
+                          className="text-black hover:underline text-[11px] px-1 cursor-pointer"
                         >
-                          {copiedKey === 'last_pwd' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          {copiedKey === 'last_pwd' ? '[Copied]' : '[Copy]'}
                         </button>
                       </div>
                     </div>
@@ -830,14 +730,13 @@ export default function RoleManagement({ signer, account }) {
                       const text = `Healthcare Account Credentials\nName: ${lastCreatedCredentials.name}\nRole: ${lastCreatedCredentials.role}\nEmail: ${lastCreatedCredentials.email}\nPassword: ${lastCreatedCredentials.password}`;
                       copyToClipboard(text, 'copy_all');
                     }}
-                    className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-2xs"
+                    className="w-full py-2 bg-black hover:bg-gray-900 text-white rounded-lg text-xs font-medium flex items-center justify-center cursor-pointer"
                   >
-                    {copiedKey === 'copy_all' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedKey === 'copy_all' ? 'Copied Slip' : 'Copy Credentials Slip'}</span>
                   </button>
                 </div>
               ) : (
-                <div className="bg-white border border-dashed border-slate-200 rounded-lg p-6 text-center text-slate-400 text-xs font-normal">
+                <div className="bg-white border border-dashed border-gray-200 rounded-lg p-6 text-center text-black opacity-60 text-xs font-normal">
                   Fill out the form on the left to generate active login credentials.
                 </div>
               )}
@@ -846,38 +745,31 @@ export default function RoleManagement({ signer, account }) {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* VIEW 3: BLOCKCHAIN RBAC ON-CHAIN PERMISSIONS                              */}
-      {/* ========================================================================= */}
+      {/* VIEW 3: BLOCKCHAIN RBAC ON-CHAIN PERMISSIONS */}
       {activeAdminView === 'blockchain' && (
-        <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs space-y-5">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-5 space-y-5 text-black">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Smart Contract Role-Based Access Control (RBAC)</span>
-            </h3>
-            <p className="text-xs font-normal text-slate-500 mt-0.5">
-              Directly grant cryptographic roles on the <code className="font-mono text-slate-700 bg-slate-100 px-1 py-0.5 rounded">BlockDriveAccessControl.sol</code> Ethereum contract.
+            <h3 className="text-sm font-semibold text-black">Smart Contract Role-Based Access Control (RBAC)</h3>
+            <p className="text-xs font-normal text-black mt-0.5 opacity-75">
+              Directly grant cryptographic roles on the <code className="font-mono text-black bg-gray-100 px-1 py-0.5 rounded">BlockDriveAccessControl.sol</code> Ethereum contract.
             </p>
           </div>
 
           {contractStatus && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-black">
               <span>{contractStatus}</span>
             </div>
           )}
 
           {contractError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-black">
               <span>{contractError}</span>
             </div>
           )}
 
-          <div className="space-y-4 max-w-xl">
+          <div className="space-y-4 max-w-xl text-black">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
+              <label className="block text-xs font-medium text-black mb-1">
                 Target Ethereum Wallet Address
               </label>
               <input
@@ -885,12 +777,12 @@ export default function RoleManagement({ signer, account }) {
                 placeholder="0x..."
                 value={targetAddress}
                 onChange={(e) => setTargetAddress(e.target.value)}
-                className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono outline-none transition-all placeholder:text-slate-400"
+                className="w-full bg-white border border-gray-300 focus:border-black rounded-lg px-3 py-2 text-xs text-black font-mono outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1.5">
+              <label className="block text-xs font-medium text-black mb-1.5">
                 Select On-Chain Role
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -901,8 +793,8 @@ export default function RoleManagement({ signer, account }) {
                     onClick={() => setBlockchainRole(r)}
                     className={`py-2 px-3 rounded border text-xs font-medium capitalize cursor-pointer ${
                       blockchainRole === r
-                        ? 'bg-white text-gray-900 border-gray-400 font-semibold shadow-xs'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                        ? 'bg-white text-black border-black font-semibold'
+                        : 'bg-white text-black border-gray-200 hover:bg-gray-50'
                     }`}
                   >
                     {r === 'medicalStaff' ? 'Staff' : r}
@@ -916,19 +808,9 @@ export default function RoleManagement({ signer, account }) {
                 type="button"
                 onClick={() => handleBlockchainOnboard()}
                 disabled={isContractProcessing}
-                className="py-2 px-4 bg-slate-900 hover:bg-slate-800 active:scale-95 disabled:bg-slate-300 text-white font-medium rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer interactive-lift-subtle"
+                className="py-2 px-4 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white font-medium rounded-lg text-xs flex items-center justify-center cursor-pointer"
               >
-                {isContractProcessing ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Executing On-Chain RBAC Transaction...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Assign On-Chain {blockchainRole.toUpperCase()} Role</span>
-                  </>
-                )}
+                <span>{isContractProcessing ? 'Executing On-Chain RBAC Transaction...' : `Assign On-Chain ${blockchainRole.toUpperCase()} Role`}</span>
               </button>
             </div>
           </div>

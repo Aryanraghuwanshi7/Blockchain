@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Download, Lock, Unlock, Loader2 } from 'lucide-react';
 import { getFileRegistryContract } from '../utils/contracts';
 import { downloadFromIPFS } from '../utils/ipfs';
 import { unwrapKeyForRecipient, decryptFile, importRawKey } from '../utils/crypto';
@@ -99,17 +98,17 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
-      <div className="border-b border-slate-100 pb-3 mb-3.5">
-        <h3 className="text-sm font-semibold text-slate-900">Direct Document Decryption</h3>
-        <p className="text-xs text-slate-500 mt-0.5 font-normal">
+    <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6 text-black">
+      <div className="border-b border-gray-100 pb-3 mb-3.5">
+        <h3 className="text-sm font-semibold text-black">Direct Document Decryption</h3>
+        <p className="text-xs text-black mt-0.5 font-normal">
           Enter a known File Identifier (bytes32 hex) to verify permissions, unwrap the symmetric key, and decrypt client-side.
         </p>
       </div>
 
       <div className="space-y-3.5">
         <div>
-          <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-wider mb-1">
+          <label className="block text-[11px] font-medium text-black uppercase tracking-wider mb-1">
             File Identifier (bytes32 Hex) *
           </label>
           <input
@@ -117,30 +116,20 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
             placeholder="0x... (66-character bytes32 file ID)"
             value={fileIdInput}
             onChange={(e) => setFileIdInput(e.target.value)}
-            className="w-full bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md px-3 py-2 text-xs font-mono text-slate-900 outline-none placeholder:text-slate-400 transition-all duration-150"
+            className="w-full bg-white border border-gray-300 focus:border-black rounded-md px-3 py-2 text-xs font-mono text-black outline-none"
           />
         </div>
 
         <button
           onClick={handleDecryptAndDownload}
           disabled={!fileIdInput || isDecrypting || !signer}
-          className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white font-medium rounded-md text-xs transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-2xs"
+          className="w-full py-2.5 px-4 bg-black hover:bg-gray-900 disabled:bg-gray-200 disabled:text-black text-white font-medium rounded-md text-xs flex items-center justify-center cursor-pointer"
         >
-          {isDecrypting ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Decrypting Payload...</span>
-            </>
-          ) : (
-            <>
-              <Unlock className="w-3.5 h-3.5" />
-              <span>Fetch, Unwrap Key & Decrypt</span>
-            </>
-          )}
+          <span>{isDecrypting ? 'Decrypting Payload...' : 'Fetch, Unwrap Key & Decrypt'}</span>
         </button>
 
         {status && (
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-md text-xs font-mono text-slate-700 font-normal">
+          <div className="p-2.5 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono text-black font-normal">
             {status}
           </div>
         )}
@@ -149,9 +138,8 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
           <a
             href={downloadUrl}
             download={downloadFileName}
-            className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-medium rounded-md text-xs flex items-center justify-center gap-1.5 transition-all duration-150 shadow-2xs cursor-pointer"
+            className="w-full py-2.5 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded-md text-xs flex items-center justify-center cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
             <span>Download Decrypted File ({downloadFileName})</span>
           </a>
         )}
@@ -159,3 +147,4 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
     </div>
   );
 }
+

@@ -1,12 +1,4 @@
 import React from 'react';
-import {
-  Stethoscope,
-  Building2,
-  HeartHandshake,
-  ShieldAlert,
-  ArrowRight,
-  HardDrive
-} from 'lucide-react';
 
 export default function RoleSelection({ onSelectRole, selectedRole, onContinue }) {
   const roles = [
@@ -14,25 +6,21 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
       id: 'patient',
       title: 'Patient',
       description: 'View and download medical records shared with you.',
-      icon: HeartHandshake,
     },
     {
       id: 'doctor',
       title: 'Doctor',
       description: 'Upload and encrypt medical records, manage patient access.',
-      icon: Stethoscope,
     },
     {
       id: 'medicalStaff',
       title: 'Medical Staff',
       description: 'Upload documents and maintain hospital records.',
-      icon: Building2,
     },
     {
       id: 'admin',
       title: 'Administrator',
       description: 'Manage user accounts, roles, and system permissions.',
-      icon: ShieldAlert,
     }
   ];
 
@@ -48,12 +36,7 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
       {/* Simple Header */}
       <header className="bg-white border-b border-gray-200 py-3 px-6">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-gray-100 text-black border border-gray-200 rounded">
-              <HardDrive className="w-4 h-4 text-black" />
-            </div>
-            <span className="font-semibold text-base text-black">BlockDrive</span>
-          </div>
+          <span className="font-semibold text-base text-black">BlockDrive</span>
           <span className="text-xs text-black">Decentralized Healthcare Storage</span>
         </div>
       </header>
@@ -68,7 +51,6 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
         {/* 4 Clean Simple Role Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
           {roles.map((r) => {
-            const Icon = r.icon;
             const isSelected = selectedRole === r.id;
 
             return (
@@ -82,12 +64,7 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
                 }`}
               >
                 <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-gray-100 text-black rounded">
-                      <Icon className="w-5 h-5 text-black" />
-                    </div>
-                    <h2 className="text-base font-medium text-black">{r.title}</h2>
-                  </div>
+                  <h2 className="text-base font-semibold text-black mb-1.5">{r.title}</h2>
                   <p className="text-xs text-black leading-relaxed">{r.description}</p>
                 </div>
 
@@ -98,14 +75,13 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
                       e.stopPropagation();
                       handleChoose(r.id);
                     }}
-                    className={`w-full py-2 px-3 text-xs font-medium rounded border flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`w-full py-2 px-3 text-xs font-medium rounded border flex items-center justify-center cursor-pointer ${
                       isSelected
                         ? 'border-gray-400 bg-white text-black font-semibold shadow-xs'
                         : 'border-gray-300 bg-white hover:bg-gray-50 text-black'
                     }`}
                   >
                     <span>Continue as {r.title}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-black" />
                   </button>
                 </div>
               </div>
@@ -121,4 +97,5 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
     </div>
   );
 }
+
 

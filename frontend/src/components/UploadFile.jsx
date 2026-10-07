@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import { UploadCloud, CheckCircle2, Loader2, FileText, Lock, ShieldCheck } from 'lucide-react';
 import { generateAESKey, encryptFile, wrapKeyForRecipient } from '../utils/crypto';
 import { uploadToIPFS } from '../utils/ipfs';
 import { getFileRegistryContract } from '../utils/contracts';
@@ -114,9 +113,8 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
 
   if (roleLoading) {
     return (
-      <div className="bg-white border border-slate-200 rounded-lg p-8 shadow-sm flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-slate-400 mr-2" />
-        <span className="text-sm text-slate-500">Verifying healthcare credentials...</span>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 flex items-center justify-center text-xs text-black">
+        <span>Verifying healthcare credentials...</span>
       </div>
     );
   }
@@ -124,35 +122,30 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
   // Strict Healthcare RBAC: Only doctor and medicalStaff can upload files
   if (role !== "doctor" && role !== "medicalStaff") {
     return (
-      <div className="bg-white border border-slate-200 rounded-lg p-8 shadow-sm text-center space-y-3">
-        <div className="mx-auto w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-1">
-          <Lock className="w-6 h-6" />
-        </div>
-        <div>
-          <h3 className="text-base font-semibold text-slate-900 mb-1">Access Restricted</h3>
-          <p className="text-sm text-slate-600 max-w-md mx-auto">
-            Only verified doctors and medical staff can upload medical records.
-          </p>
-          <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-            Patients can access records shared with them in the "Shared With Me" tab.
-          </p>
-        </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center space-y-3 text-black">
+        <h3 className="text-sm font-semibold text-black mb-1">Access Restricted</h3>
+        <p className="text-xs text-black max-w-md mx-auto opacity-75">
+          Only verified doctors and medical staff can upload medical records.
+        </p>
+        <p className="text-xs text-black max-w-md mx-auto mt-1 opacity-60">
+          Patients can access records shared with them in the "Shared With Me" tab.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
-      <div className="border-b border-slate-100 pb-3.5 mb-4">
-        <h3 className="text-sm font-semibold text-slate-900">Encrypted Document Upload</h3>
-        <p className="text-xs text-slate-500 mt-0.5 font-normal">
+    <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6 text-black">
+      <div className="border-b border-gray-100 pb-3.5 mb-4">
+        <h3 className="text-sm font-semibold text-black">Encrypted Document Upload</h3>
+        <p className="text-xs text-black mt-0.5 font-normal">
           Files are encrypted locally via AES-256-GCM before transmission. Raw file binary never leaves your browser unencrypted.
         </p>
       </div>
 
       <div className="space-y-3.5">
         {/* Upload Drop Zone */}
-        <div className="group border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50 rounded-lg p-6 sm:p-7 text-center cursor-pointer relative interactive-lift-subtle">
+        <div className="border border-dashed border-gray-300 hover:border-black bg-gray-50/50 hover:bg-gray-50 rounded-lg p-6 sm:p-7 text-center cursor-pointer relative">
           <input
             type="file"
             id="fileInput"
@@ -161,32 +154,28 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
             disabled={isProcessing}
           />
           <div className="flex flex-col items-center pointer-events-none">
-            <div className="p-2.5 bg-white rounded-md border border-slate-200 mb-2.5 text-slate-600 shadow-2xs">
-              <Lock className="w-4.5 h-4.5 text-slate-700" />
-            </div>
-            <span className="text-xs sm:text-sm font-medium text-slate-800">
+            <span className="text-xs sm:text-sm font-medium text-black">
               {file ? (
-                <span className="inline-flex items-center gap-1.5 text-slate-900 font-medium bg-white px-2.5 py-1 rounded-md border border-slate-200 shadow-2xs">
-                  <FileText className="w-3.5 h-3.5 text-slate-600" />
+                <span className="inline-flex items-center gap-1.5 text-black font-medium bg-white px-2.5 py-1 rounded-md border border-gray-200">
                   {file.name}
-                  <span className="text-slate-400 font-normal text-xs">({(file.size / 1024).toFixed(1)} KB)</span>
+                  <span className="text-black font-normal text-xs">({(file.size / 1024).toFixed(1)} KB)</span>
                 </span>
               ) : (
                 "Select a document to encrypt and store"
               )}
             </span>
-            <span className="text-[11px] text-slate-500 mt-1 font-normal">
+            <span className="text-[11px] text-black mt-1 font-normal opacity-75">
               Client-side zero-knowledge encryption • IPFS decentralized storage
             </span>
           </div>
         </div>
 
         {!signer && (
-          <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-md text-xs text-amber-900 flex items-center justify-between font-normal">
+          <div className="p-2.5 bg-gray-50 border border-gray-200 rounded-md text-xs text-black flex items-center justify-between font-normal">
             <span>Ethereum wallet is not connected.</span>
             <button
               onClick={onConnectWallet}
-              className="font-medium underline hover:text-amber-950 ml-2 cursor-pointer active:scale-95 transition-all"
+              className="font-medium underline ml-2 cursor-pointer"
             >
               Connect Wallet
             </button>
@@ -196,42 +185,33 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
         <button
           onClick={handleUpload}
           disabled={isProcessing || (!signer && !onConnectWallet)}
-          className={`w-full py-2.5 px-4 font-medium text-xs rounded-md transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] ${!signer
-              ? 'bg-slate-800 hover:bg-slate-900 text-white shadow-2xs'
+          className={`w-full py-2.5 px-4 font-medium text-xs rounded-md flex items-center justify-center cursor-pointer ${
+            !signer
+              ? 'bg-black text-white'
               : !file
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                : 'bg-slate-900 hover:bg-slate-800 text-white shadow-2xs'
-            }`}
+                ? 'bg-gray-100 text-black cursor-not-allowed border border-gray-200'
+                : 'bg-black hover:bg-gray-900 text-white'
+          }`}
         >
           {isProcessing ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Processing Transaction...</span>
-            </>
+            <span>Processing Transaction...</span>
           ) : !signer ? (
-            <>
-              <UploadCloud className="w-3.5 h-3.5" />
-              <span>Connect Wallet to Upload</span>
-            </>
+            <span>Connect Wallet to Upload</span>
           ) : !file ? (
             <span>Select a Document First</span>
           ) : (
-            <>
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Encrypt & Register on Blockchain</span>
-            </>
+            <span>Encrypt & Register on Blockchain</span>
           )}
         </button>
 
         {status && (
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-md text-xs font-mono text-slate-700 font-normal">
+          <div className="p-2.5 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono text-black font-normal">
             {status}
           </div>
         )}
 
         {txHash && (
-          <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md text-xs flex items-center gap-2 font-normal">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <div className="p-2.5 bg-gray-50 border border-gray-200 text-black rounded-md text-xs flex items-center gap-2 font-normal">
             <span className="font-mono truncate">Transaction Confirmed: {txHash}</span>
           </div>
         )}
@@ -239,3 +219,4 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
     </div>
   );
 }
+
