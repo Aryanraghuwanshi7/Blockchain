@@ -449,10 +449,10 @@ export default function RoleManagement({ signer, account }) {
                   key={r}
                   type="button"
                   onClick={() => setRoleFilter(r)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer capitalize ${
+                  className={`px-2.5 py-1 rounded text-xs font-medium cursor-pointer capitalize ${
                     roleFilter === r
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-white text-gray-900 font-semibold border border-gray-300 shadow-xs'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   {r === 'medicalStaff' ? 'Staff' : r}
@@ -641,16 +641,16 @@ export default function RoleManagement({ signer, account }) {
                         key={r.id}
                         type="button"
                         onClick={() => setNewUserRole(r.id)}
-                        className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                        className={`p-3 rounded-lg border text-left cursor-pointer flex flex-col justify-between gap-1.5 ${
                           isSelected
-                            ? 'border-slate-900 bg-slate-900 text-white shadow-2xs font-medium'
+                            ? 'border-gray-500 bg-gray-50 text-gray-900 ring-1 ring-gray-400 font-medium'
                             : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                         }`}
                       >
-                        <RIcon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
+                        <RIcon className={`w-4 h-4 ${isSelected ? 'text-gray-900' : 'text-slate-500'}`} />
                         <div>
                           <div className="text-xs font-medium">{r.title}</div>
-                          <span className={`text-[10px] font-normal ${isSelected ? 'text-slate-300' : 'text-slate-400'}`}>
+                          <span className="text-[10px] font-normal text-slate-400">
                             {r.id === 'doctor' ? 'Clinical & Certificates' : r.id === 'medicalStaff' ? 'Hospital Archives' : 'Health Records'}
                           </span>
                         </div>
@@ -899,9 +899,9 @@ export default function RoleManagement({ signer, account }) {
                     key={r}
                     type="button"
                     onClick={() => setBlockchainRole(r)}
-                    className={`py-2 px-3 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded border text-xs font-medium capitalize cursor-pointer ${
                       blockchainRole === r
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                        ? 'bg-white text-gray-900 border-gray-400 font-semibold shadow-xs'
                         : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >

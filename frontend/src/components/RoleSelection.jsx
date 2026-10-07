@@ -49,7 +49,7 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
       <header className="bg-white border-b border-gray-200 py-3 px-6">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-gray-900 text-white rounded">
+            <div className="p-1.5 bg-gray-100 text-gray-800 border border-gray-200 rounded">
               <HardDrive className="w-4 h-4" />
             </div>
             <span className="font-semibold text-base text-gray-900">BlockDrive</span>
@@ -75,10 +75,10 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
               <div
                 key={r.id}
                 onClick={() => handleChoose(r.id)}
-                className={`bg-white border rounded-lg p-5 cursor-pointer flex flex-col justify-between transition-colors ${
+                className={`bg-white border rounded-lg p-5 cursor-pointer flex flex-col justify-between ${
                   isSelected
-                    ? 'border-gray-900 ring-1 ring-gray-900 bg-gray-50/50'
-                    : 'border-gray-200 hover:border-gray-400'
+                    ? 'border-gray-500 bg-gray-50/50 ring-1 ring-gray-400'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div>
@@ -98,7 +98,11 @@ export default function RoleSelection({ onSelectRole, selectedRole, onContinue }
                       e.stopPropagation();
                       handleChoose(r.id);
                     }}
-                    className="w-full py-2 px-3 text-xs font-medium rounded border border-gray-300 bg-white hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-gray-800"
+                    className={`w-full py-2 px-3 text-xs font-medium rounded border flex items-center justify-center gap-1.5 cursor-pointer ${
+                      isSelected
+                        ? 'border-gray-400 bg-white text-gray-900 font-semibold shadow-xs'
+                        : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-700'
+                    }`}
                   >
                     <span>Continue as {r.title}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
