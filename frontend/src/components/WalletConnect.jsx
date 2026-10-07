@@ -91,14 +91,14 @@ export default function WalletConnect({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-900">Wallet</span>
-            <span className={`text-[11px] font-medium ${account ? 'text-emerald-700' : 'text-gray-500'}`}>
-              {account ? '● Connected' : '○ Not connected'}
+            <span className="text-xs text-gray-500">
+              {account ? 'Connected' : 'Not connected'}
             </span>
           </div>
           <div className="text-xs text-gray-500 mt-0.5">
             {account ? (
               <div className="flex items-center gap-2 flex-wrap text-xs">
-                <span className="font-mono text-gray-800 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
+                <span className="text-gray-800 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
                   {formatAddress(account)}
                 </span>
                 <button

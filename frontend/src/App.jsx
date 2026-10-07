@@ -261,12 +261,9 @@ function AppContent({
             <span>Switch Role Portal</span>
           </button>
 
-          <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-            <span className="text-[11px] text-gray-400">Status</span>
-            <div className="flex items-center gap-1.5 text-gray-700 text-xs">
-              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-              <span>{account ? 'Connected' : 'Disconnected'}</span>
-            </div>
+          <div className="flex items-center justify-between pt-1 border-t border-gray-100 text-xs text-gray-500">
+            <span>Status</span>
+            <span className="text-gray-700">{account ? 'Connected' : 'Disconnected'}</span>
           </div>
         </div>
       </aside>
@@ -300,8 +297,7 @@ function AppContent({
 
           <div className="flex items-center gap-2 sm:gap-3">
             {authUser && (
-              <div className="hidden sm:flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded px-2.5 py-1 text-xs text-gray-700">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <div className="hidden sm:flex items-center bg-gray-50 border border-gray-200 rounded px-2.5 py-1 text-xs text-gray-700">
                 <span className="max-w-[160px] truncate">{authUser.email}</span>
               </div>
             )}
@@ -396,66 +392,11 @@ function AppContent({
             <RoleManagement signer={signer} account={account} />
           )}
         </div>
-
-        {/* Session ECDH Public Key Inspector */}
-        {userKeys && (
-          <div className="bg-white border border-gray-200 rounded p-3 text-xs text-gray-600">
-            <button
-              onClick={() => setShowKeyDetails(!showKeyDetails)}
-              className="w-full flex items-center justify-between text-gray-700 font-medium hover:text-gray-900 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Key className="w-3.5 h-3.5 text-gray-500" />
-                <span>Client ECDH Public Key (P-256 JWK Session)</span>
-              </div>
-              {showKeyDetails ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
-            </button>
-            {showKeyDetails && (
-              <div className="mt-2 pt-2 border-t border-gray-100">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-medium text-gray-400">P-256 JWK Parameters</span>
-                  <button
-                    onClick={handleCopyJWK}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-600 hover:text-gray-900 px-2 py-0.5 rounded hover:bg-gray-100"
-                  >
-                    {copiedJWK ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedJWK ? 'Copied' : 'Copy JWK'}</span>
-                  </button>
-                </div>
-                <div className="font-mono text-[11px] text-gray-600 break-all select-all bg-gray-50 p-2 rounded border border-gray-200">
-                  {JSON.stringify(userKeys.publicKeyJWK)}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Security Status Footer Strip */}
-        <div className="border border-gray-200 bg-white rounded p-3 text-xs text-gray-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <span className="font-medium text-gray-700 text-xs">Security Status</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-              <span>{account ? 'Wallet connected' : 'Wallet not connected'}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${userKeys ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-              <span>{userKeys ? 'Encryption available' : 'Session keys pending'}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-              <span>Access control active</span>
-            </span>
-          </div>
-        </div>
       </main>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-3 text-center text-xs text-gray-400">
-        BlockDrive Decentralized Storage Architecture • Cryptographic Access Control Layer
+        BlockDrive • Decentralized Healthcare Storage
       </footer>
     </div>
   );
