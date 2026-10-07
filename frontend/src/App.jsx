@@ -173,33 +173,33 @@ function AppContent({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
-      {/* Backdrop Overlay with smooth fade-in and fade-out */}
-      <div
-        className={`fixed inset-0 bg-slate-900/25 backdrop-blur-[1.5px] z-40 transition-opacity duration-[260ms] ease-out ${
-          isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={() => setIsSidebarOpen(false)}
-        aria-hidden="true"
-      />
+      {/* Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Collapsible Vertical Sidebar */}
+      {/* Vertical Sidebar */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 w-64 max-w-[80vw] bg-white border-r border-slate-200 z-50 shadow-lg flex flex-col transform transition-transform duration-[240ms] ease-out ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 bottom-0 w-64 max-w-[80vw] bg-white border-r border-gray-200 z-50 shadow-md flex flex-col ${
+          isSidebarOpen ? 'block' : 'hidden'
         }`}
         aria-label="Navigation Sidebar"
       >
         {/* Sidebar Header */}
-        <div className="h-14 px-4 border-b border-slate-200 flex items-center justify-between shrink-0">
+        <div className="h-14 px-4 border-b border-gray-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <div className="p-1 bg-slate-900 text-white rounded">
+            <div className="p-1 bg-gray-900 text-white rounded">
               <HardDrive className="w-4 h-4" />
             </div>
-            <span className="text-sm font-semibold text-slate-900">BlockDrive</span>
+            <span className="text-sm font-semibold text-gray-900">BlockDrive</span>
           </div>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
+            className="p-1 text-gray-500 hover:text-gray-900 rounded"
             aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
@@ -208,128 +208,107 @@ function AppContent({
 
         {/* Sidebar Grouped Navigation */}
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
-          {NAV_GROUPS.map((group, groupIdx) => {
-            let runningIdx = groupIdx * 3;
-            return (
-              <div key={group.title} className="space-y-0.5">
-                <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                  {group.title}
-                </div>
-                {group.items.map((tab, itemIdx) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  const itemIndex = runningIdx + itemIdx;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        setIsSidebarOpen(false);
-                      }}
-                      style={{
-                        transitionDelay: isSidebarOpen ? `${itemIndex * 20 + 20}ms` : '0ms',
-                      }}
-                      className={`w-full group flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-all duration-150 relative cursor-pointer ${
-                        isSidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
-                      } ${
-                        isActive
-                          ? 'bg-slate-100 text-slate-900 font-medium shadow-2xs'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                      }`}
-                    >
-                      {isActive && (
-                        <div className="absolute left-0 top-2 bottom-2 w-0.5 bg-slate-900 rounded-r" />
-                      )}
-                      <div className="flex items-start gap-2.5 min-w-0">
-                        <div className={`p-0.5 transition-colors shrink-0 mt-0.5 ${
-                          isActive ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600'
-                        }`}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className={`text-xs ${isActive ? 'font-medium text-slate-900' : 'font-normal text-slate-700'}`}>
-                            {tab.label}
-                          </div>
-                          <p className="text-[11px] text-slate-400 group-hover:text-slate-500 font-normal truncate mt-0.5">
-                            {tab.desc}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight className={`w-3.5 h-3.5 shrink-0 ml-1.5 ${
-                        isActive ? 'opacity-100 text-slate-700' : 'opacity-0 group-hover:opacity-100 text-slate-400'
-                      }`} />
-                    </button>
-                  );
-                })}
+          {NAV_GROUPS.map((group) => (
+            <div key={group.title} className="space-y-0.5">
+              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                {group.title}
               </div>
-            );
-          })}
+              {group.items.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setIsSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded text-left cursor-pointer ${
+                      isActive
+                        ? 'bg-gray-100 text-gray-900 font-medium'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? 'text-gray-900' : 'text-gray-400'}`} />
+                      <div className="min-w-0 flex-1">
+                        <div className={`text-xs ${isActive ? 'font-medium text-gray-900' : 'font-normal text-gray-700'}`}>
+                          {tab.label}
+                        </div>
+                        <p className="text-[11px] text-gray-400 font-normal truncate mt-0.5">
+                          {tab.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-3.5 h-3.5 shrink-0 ml-1.5 ${isActive ? 'text-gray-700' : 'text-gray-300'}`} />
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
 
         {/* Sidebar Footer Info & Role Portal Switcher */}
-        <div className="p-3 border-t border-slate-200 text-xs text-slate-600 bg-white flex flex-col gap-2.5 shrink-0">
+        <div className="p-3 border-t border-gray-200 text-xs text-gray-600 bg-white flex flex-col gap-2 shrink-0">
           <button
             onClick={() => {
               setIsSidebarOpen(false);
               onOpenRolePortal();
             }}
-            className="w-full py-1.5 px-3 bg-slate-100 hover:bg-slate-200 active:scale-95 rounded-lg text-xs font-medium text-slate-700 flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+            className="w-full py-1.5 px-3 bg-gray-100 hover:bg-gray-200 rounded text-xs font-medium text-gray-700 flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <Users className="w-3.5 h-3.5 text-slate-500" />
+            <Users className="w-3.5 h-3.5 text-gray-500" />
             <span>Switch Role Portal</span>
           </button>
 
-          <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-            <span className="text-[11px] text-slate-400 font-normal">Status</span>
-            <div className="flex items-center gap-1.5 font-normal text-slate-700 text-xs">
-              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+          <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+            <span className="text-[11px] text-gray-400">Status</span>
+            <div className="flex items-center gap-1.5 text-gray-700 text-xs">
+              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-gray-300'}`} />
               <span>{account ? 'Connected' : 'Disconnected'}</span>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Enterprise Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Hamburger / Menu Button */}
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open navigation sidebar"
-              className="p-1.5 -ml-1.5 mr-1 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors flex items-center gap-1.5 focus:outline-none cursor-pointer"
+              className="p-1.5 -ml-1.5 mr-1 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded flex items-center gap-1.5 cursor-pointer"
             >
               <Menu className="w-4 h-4" />
-              <span className="text-xs font-medium text-slate-600 hidden md:inline">Menu</span>
+              <span className="text-xs font-medium text-gray-600 hidden md:inline">Menu</span>
             </button>
 
-            <div className="p-1 bg-slate-900 text-white rounded">
+            <div className="p-1 bg-gray-900 text-white rounded">
               <HardDrive className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-slate-900">BlockDrive</span>
-                <span className="px-1.5 py-0.2 text-[10px] font-medium bg-slate-100 text-slate-600 rounded border border-slate-200">
+                <span className="text-sm font-semibold text-gray-900">BlockDrive</span>
+                <span className="px-1.5 py-0.2 text-[10px] font-medium bg-gray-100 text-gray-600 rounded border border-gray-200">
                   v1.0
                 </span>
               </div>
-              <p className="text-xs text-slate-500 hidden sm:block font-normal">Decentralized Access-Controlled Storage System</p>
+              <p className="text-xs text-gray-500 hidden sm:block">Decentralized Healthcare Storage</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Supabase User Email Indicator */}
             {authUser && (
-              <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-700">
+              <div className="hidden sm:flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded px-2.5 py-1 text-xs text-gray-700">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="font-normal max-w-[160px] truncate">{authUser.email}</span>
+                <span className="max-w-[160px] truncate">{authUser.email}</span>
               </div>
             )}
 
-            {/* Clean Log Out Button */}
             <button
               onClick={handleSignOut}
-              className="px-2.5 py-1 bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 border border-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              className="px-2.5 py-1 bg-white hover:bg-red-50 hover:border-red-200 hover:text-red-700 border border-gray-300 text-gray-700 rounded text-xs font-medium flex items-center gap-1.5 cursor-pointer"
               title="Log out and return to choose role page"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -340,7 +319,7 @@ function AppContent({
       </header>
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5 flex-1 w-full">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-4 flex-1 w-full">
         {/* Auth Modal */}
         <AuthModal
           isOpen={isAuthModalOpen}
@@ -359,22 +338,22 @@ function AppContent({
           onSwitchNetwork={switchToLocalhostNetwork}
         />
 
-        {/* Clean Page Breadcrumb / View Header */}
-        <div className="flex items-center justify-between pb-1 border-b border-slate-200">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-normal">
-            <span className="text-slate-400">BlockDrive</span>
+        {/* Page Breadcrumb */}
+        <div className="flex items-center justify-between pb-1 border-b border-gray-200">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <span className="text-gray-400">BlockDrive</span>
             <span>/</span>
-            <span className="font-medium text-slate-900 flex items-center gap-1.5">
-              <CurrentIcon className="w-3.5 h-3.5 text-slate-500" />
+            <span className="font-medium text-gray-900 flex items-center gap-1.5">
+              <CurrentIcon className="w-3.5 h-3.5 text-gray-500" />
               {currentActiveTab.label}
             </span>
           </div>
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 font-medium px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-900 font-medium px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 cursor-pointer"
           >
             <Menu className="w-3.5 h-3.5" />
-            <span>Switch Tab</span>
+            <span>Menu</span>
           </button>
         </div>
 
@@ -418,32 +397,32 @@ function AppContent({
           )}
         </div>
 
-        {/* Collapsible Session ECDH Public Key Inspector */}
+        {/* Session ECDH Public Key Inspector */}
         {userKeys && (
-          <div className="bg-white border border-slate-200 rounded-lg p-3 text-xs text-slate-600 shadow-2xs">
+          <div className="bg-white border border-gray-200 rounded p-3 text-xs text-gray-600">
             <button
               onClick={() => setShowKeyDetails(!showKeyDetails)}
-              className="w-full flex items-center justify-between text-slate-700 font-medium hover:text-slate-900 cursor-pointer"
+              className="w-full flex items-center justify-between text-gray-700 font-medium hover:text-gray-900 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <Key className="w-3.5 h-3.5 text-slate-500" />
+                <Key className="w-3.5 h-3.5 text-gray-500" />
                 <span>Client ECDH Public Key (P-256 JWK Session)</span>
               </div>
-              {showKeyDetails ? <ChevronUp className="w-3.5 h-3.5 text-slate-400" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-400" />}
+              {showKeyDetails ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
             </button>
             {showKeyDetails && (
-              <div className="mt-2 pt-2 border-t border-slate-100">
+              <div className="mt-2 pt-2 border-t border-gray-100">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-medium text-slate-400">P-256 JWK Parameters</span>
+                  <span className="text-[10px] font-medium text-gray-400">P-256 JWK Parameters</span>
                   <button
                     onClick={handleCopyJWK}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 px-2 py-0.5 rounded hover:bg-slate-100 transition-colors"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-600 hover:text-gray-900 px-2 py-0.5 rounded hover:bg-gray-100"
                   >
                     {copiedJWK ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                     <span>{copiedJWK ? 'Copied' : 'Copy JWK'}</span>
                   </button>
                 </div>
-                <div className="font-mono text-[11px] text-slate-600 break-all select-all bg-slate-50 p-2 rounded border border-slate-100">
+                <div className="font-mono text-[11px] text-gray-600 break-all select-all bg-gray-50 p-2 rounded border border-gray-200">
                   {JSON.stringify(userKeys.publicKeyJWK)}
                 </div>
               </div>
@@ -451,31 +430,31 @@ function AppContent({
           </div>
         )}
 
-        {/* Subtle Security Status Footer Strip */}
-        <div className="border border-slate-200 bg-white rounded-lg p-3 text-xs text-slate-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
+        {/* Security Status Footer Strip */}
+        <div className="border border-gray-200 bg-white rounded p-3 text-xs text-gray-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="font-medium text-slate-700 text-xs">Security Status</span>
+            <Shield className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+            <span className="font-medium text-gray-700 text-xs">Security Status</span>
           </div>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 font-normal">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-gray-300'}`} />
               <span>{account ? 'Wallet connected' : 'Wallet not connected'}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${userKeys ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${userKeys ? 'bg-emerald-500' : 'bg-gray-300'}`} />
               <span>{userKeys ? 'Encryption available' : 'Session keys pending'}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${account ? 'bg-emerald-500' : 'bg-gray-300'}`} />
               <span>Access control active</span>
             </span>
           </div>
         </div>
       </main>
 
-      {/* Formal Footer */}
-      <footer className="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-400 font-normal">
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 py-3 text-center text-xs text-gray-400">
         BlockDrive Decentralized Storage Architecture • Cryptographic Access Control Layer
       </footer>
     </div>
