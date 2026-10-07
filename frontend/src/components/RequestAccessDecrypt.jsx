@@ -99,17 +99,17 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs hover:border-slate-300 transition-colors">
-      <div className="border-b border-slate-100 pb-3 mb-4">
-        <h3 className="text-base font-semibold text-slate-900">Direct Document Decryption</h3>
-        <p className="text-xs text-slate-500 mt-0.5">
+    <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
+      <div className="border-b border-slate-100 pb-3 mb-3.5">
+        <h3 className="text-sm font-semibold text-slate-900">Direct Document Decryption</h3>
+        <p className="text-xs text-slate-500 mt-0.5 font-normal">
           Enter a known File Identifier (bytes32 hex) to verify permissions, unwrap the symmetric key, and decrypt client-side.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+          <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-wider mb-1">
             File Identifier (bytes32 Hex) *
           </label>
           <input
@@ -124,7 +124,7 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
         <button
           onClick={handleDecryptAndDownload}
           disabled={!fileIdInput || isDecrypting || !signer}
-          className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white font-medium rounded-md text-xs transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] shadow-xs hover:shadow-sm"
+          className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white font-medium rounded-md text-xs transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-2xs"
         >
           {isDecrypting ? (
             <>
@@ -140,7 +140,7 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
         </button>
 
         {status && (
-          <div className="p-3 bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors rounded-md text-xs font-mono text-slate-700">
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-md text-xs font-mono text-slate-700 font-normal">
             {status}
           </div>
         )}
@@ -149,9 +149,10 @@ export default function RequestAccessDecrypt({ signer, userKeys }) {
           <a
             href={downloadUrl}
             download={downloadFileName}
-            className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md text-xs flex items-center justify-center gap-2 transition-all duration-150 shadow-xs hover:shadow-sm active:scale-[0.99] cursor-pointer"
+            className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-medium rounded-md text-xs flex items-center justify-center gap-1.5 transition-all duration-150 shadow-2xs cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" /> Download Decrypted File ({downloadFileName})
+            <Download className="w-3.5 h-3.5" />
+            <span>Download Decrypted File ({downloadFileName})</span>
           </a>
         )}
       </div>

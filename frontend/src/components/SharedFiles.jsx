@@ -331,13 +331,13 @@ export default function SharedFiles({ signer, account, userKeys }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* 1. Explore Files by Owner Address */}
-      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs hover:border-slate-300 transition-colors">
-        <div className="border-b border-slate-100 pb-3 mb-4">
-          <h3 className="text-base font-semibold text-slate-900">Query Accessible Documents by Owner</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Query the smart contract for files authorized to your wallet by a specific data owner.
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
+        <div className="border-b border-slate-100 pb-3 mb-3.5">
+          <h3 className="text-sm font-semibold text-slate-900">Query Accessible Documents by Owner</h3>
+          <p className="text-xs text-slate-500 mt-0.5 font-normal">
+            Query the smart contract for files authorized to your wallet by a specific healthcare data owner.
           </p>
         </div>
 
@@ -352,25 +352,25 @@ export default function SharedFiles({ signer, account, userKeys }) {
           <button
             type="submit"
             disabled={isSearching || !searchOwnerAddress.trim() || !signer}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-md text-xs font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-xs hover:shadow-sm"
+            className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-md text-xs font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-2xs"
           >
             {isSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-            {isSearching ? 'Querying...' : 'Search Files'}
+            <span>{isSearching ? 'Querying...' : 'Search Files'}</span>
           </button>
         </form>
 
         {searchResults !== null && (
-          <div className="mt-5 pt-4 border-t border-slate-100">
-            <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-3">
+          <div className="mt-4 pt-3.5 border-t border-slate-100">
+            <h4 className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2.5">
               Accessible Records ({searchResults.length}):
             </h4>
             {searchResults.length === 0 ? (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded text-xs text-slate-600 flex items-center gap-2">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-600 flex items-center gap-2 font-normal">
                 <AlertCircle className="w-4 h-4 text-slate-400 shrink-0" />
                 <span>No accessible documents registered under this address for your wallet.</span>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {searchResults.map((meta) => renderFileCard(meta.fileId, meta))}
               </div>
             )}
@@ -379,34 +379,34 @@ export default function SharedFiles({ signer, account, userKeys }) {
       </div>
 
       {/* 2. Files Shared With Connected Wallet */}
-      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3.5">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Incoming Shared Documents</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Documents that third parties have authorized your wallet to decrypt.
+            <h3 className="text-sm font-semibold text-slate-900">Incoming Shared Documents</h3>
+            <p className="text-xs text-slate-500 mt-0.5 font-normal">
+              Documents that doctors or hospital staff have authorized your wallet to decrypt.
             </p>
           </div>
           <button
             onClick={loadSharedFiles}
             disabled={loading}
-            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-200 font-medium transition-colors flex items-center gap-1.5"
+            className="text-xs px-2.5 py-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 rounded-md border border-slate-200 font-medium transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-            {loading ? 'Refreshing...' : 'Refresh'}
+            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
           </button>
         </div>
 
         {sharedFileIds.length === 0 ? (
-          <div className="py-10 text-center bg-slate-50/50 rounded border border-dashed border-slate-200 p-6">
-            <Users className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <div className="py-8 text-center bg-slate-50/50 rounded-lg border border-dashed border-slate-200 p-5">
+            <Users className="w-7 h-7 text-slate-400 mx-auto mb-1.5" />
             <h4 className="text-sm font-semibold text-slate-800">No Incoming Shared Files</h4>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-              When another user grants your address access to their encrypted document, it will appear here.
+            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto font-normal">
+              When a practitioner grants your address access to their encrypted document, it will appear here.
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {sharedFileIds.map((fileId) => {
               const meta = fileMetadataMap[fileId] || {};
               return renderFileCard(fileId, meta);

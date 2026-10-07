@@ -208,33 +208,33 @@ export default function CertificateIssuer({ signer, account, onConnectWallet }) 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Formal Header Card */}
-      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-1">
-          <Award className="w-5 h-5 text-slate-700" />
-          <h3 className="text-base font-semibold text-slate-900">Certificate & Medical Document Issuance</h3>
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
+        <div className="flex items-center gap-2 mb-0.5">
+          <Award className="w-4.5 h-4.5 text-slate-700" />
+          <h3 className="text-sm font-semibold text-slate-900">Certificate & Medical Document Issuance</h3>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 font-normal">
           Issue verified medical certificates, clearances, and diagnostic summaries with permanent on-chain integrity.
         </p>
       </div>
 
       {/* Role Notice */}
       {hasIssuerRole === false && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-normal">
           <div className="flex items-center gap-2.5">
             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
             <div>
-              <p className="font-semibold">Issuer Permission Required</p>
-              <p className="text-amber-800 mt-0.5">
+              <p className="font-medium">Issuer Permission Required</p>
+              <p className="text-amber-800 text-[11px] mt-0.5 font-normal">
                 Doctor wallet (<code className="font-mono">{account}</code>) requires active on-chain issuer credentials.
               </p>
             </div>
           </div>
           <button
             onClick={handleGrantSelfIssuerRole}
-            className="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white font-medium rounded text-xs transition-colors flex items-center gap-1.5 shrink-0"
+            className="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 active:scale-[0.98] text-white font-medium rounded-md text-xs transition-colors flex items-center gap-1.5 shrink-0 shadow-2xs cursor-pointer"
           >
             <UserCheck className="w-3.5 h-3.5" />
             <span>Activate Issuer Permission</span>
@@ -243,14 +243,14 @@ export default function CertificateIssuer({ signer, account, onConnectWallet }) 
       )}
 
       {/* Main Issuance Form */}
-      <form onSubmit={handleIssue} className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm space-y-5">
-        <div className="border-b border-slate-100 pb-3">
-          <h4 className="text-sm font-semibold text-slate-900">Certificate Metadata Specification</h4>
+      <form onSubmit={handleIssue} className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs space-y-4">
+        <div className="border-b border-slate-100 pb-2.5">
+          <h4 className="text-xs font-medium text-slate-600 uppercase tracking-wider">Certificate Metadata Specification</h4>
         </div>
 
         {/* 1. Document Upload */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+          <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-wider mb-1">
             1. Document File (Fingerprint Source) *
           </label>
           <div className="group border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50/90 rounded-lg p-6 text-center cursor-pointer relative interactive-lift-subtle">

@@ -298,36 +298,36 @@ export default function RoleManagement({ signer, account }) {
   return (
     <div className="space-y-6">
       {/* Top Banner & Header */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-            <ShieldAlert className="w-6 h-6" />
+      <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+            <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">Hospital Administration Dashboard</h2>
-              <span className="text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full">
+              <h2 className="text-base font-semibold text-slate-900">Hospital Administration Dashboard</h2>
+              <span className="text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full">
                 Admin Control
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs font-normal text-slate-500 mt-0.5">
               Provision healthcare practitioner IDs, generate user credentials, and supervise smart contract access.
             </p>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold self-start sm:self-center">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium self-start sm:self-center">
           <button
             type="button"
             onClick={() => setActiveAdminView('directory')}
             className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
               activeAdminView === 'directory'
-                ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                ? 'bg-white text-slate-900 shadow-2xs font-medium'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Users className="w-3.5 h-3.5" />
+            <Users className="w-3.5 h-3.5 text-slate-500" />
             <span>User Directory ({totalUsers})</span>
           </button>
           <button
@@ -335,11 +335,11 @@ export default function RoleManagement({ signer, account }) {
             onClick={() => setActiveAdminView('create')}
             className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
               activeAdminView === 'create'
-                ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                ? 'bg-white text-slate-900 shadow-2xs font-medium'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <UserPlus className="w-3.5 h-3.5" />
+            <UserPlus className="w-3.5 h-3.5 text-slate-500" />
             <span>Create Account</span>
           </button>
           <button
@@ -347,52 +347,52 @@ export default function RoleManagement({ signer, account }) {
             onClick={() => setActiveAdminView('blockchain')}
             className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
               activeAdminView === 'blockchain'
-                ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                ? 'bg-white text-slate-900 shadow-2xs font-medium'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <ShieldCheck className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
             <span>Blockchain RBAC</span>
           </button>
         </div>
       </div>
 
       {/* KPI Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs interactive-lift-subtle">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">Total System Users</span>
+            <span className="text-xs font-normal text-slate-500">Total System Users</span>
             <Users className="w-4 h-4 text-slate-400" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">{totalUsers}</div>
-          <span className="text-[10px] text-slate-400 mt-1 block">Active across all roles</span>
+          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalUsers}</div>
+          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Active across all roles</span>
         </div>
 
-        <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-xs interactive-lift-subtle bg-gradient-to-br from-white to-blue-50/20">
+        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-blue-700">Doctors</span>
+            <span className="text-xs font-normal text-slate-600">Doctors</span>
             <Stethoscope className="w-4 h-4 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold text-blue-900 mt-2">{totalDoctors}</div>
-          <span className="text-[10px] text-blue-500 mt-1 block">Clinical practitioners</span>
+          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalDoctors}</div>
+          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Clinical practitioners</span>
         </div>
 
-        <div className="bg-white border border-teal-100 rounded-xl p-4 shadow-xs interactive-lift-subtle bg-gradient-to-br from-white to-teal-50/20">
+        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-teal-700">Medical Staff</span>
-            <Building2 className="w-4 h-4 text-teal-500" />
+            <span className="text-xs font-normal text-slate-600">Medical Staff</span>
+            <Building2 className="w-4 h-4 text-teal-600" />
           </div>
-          <div className="text-2xl font-bold text-teal-900 mt-2">{totalStaff}</div>
-          <span className="text-[10px] text-teal-500 mt-1 block">Hospital archive staff</span>
+          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalStaff}</div>
+          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Hospital archive staff</span>
         </div>
 
-        <div className="bg-white border border-emerald-100 rounded-xl p-4 shadow-xs interactive-lift-subtle bg-gradient-to-br from-white to-emerald-50/20">
+        <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs interactive-lift-subtle">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-emerald-700">Patients</span>
-            <HeartHandshake className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-normal text-slate-600">Patients</span>
+            <HeartHandshake className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-emerald-900 mt-2">{totalPatients}</div>
-          <span className="text-[10px] text-emerald-500 mt-1 block">Secure record holders</span>
+          <div className="text-xl font-semibold text-slate-900 mt-1.5">{totalPatients}</div>
+          <span className="text-[11px] font-normal text-slate-400 mt-0.5 block">Secure record holders</span>
         </div>
       </div>
 
@@ -400,11 +400,11 @@ export default function RoleManagement({ signer, account }) {
       {/* VIEW 1: USER DIRECTORY                                                    */}
       {/* ========================================================================= */}
       {activeAdminView === 'directory' && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Provisioned Healthcare Directory</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-sm font-semibold text-slate-900">Provisioned Healthcare Directory</h3>
+              <p className="text-xs font-normal text-slate-500 mt-0.5">
                 All accounts created by the administrator. Doctors, staff, and patients use these credentials to log in.
               </p>
             </div>
@@ -414,7 +414,7 @@ export default function RoleManagement({ signer, account }) {
                 type="button"
                 onClick={loadProfiles}
                 disabled={loadingProfiles}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-all active:scale-95 cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loadingProfiles ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
@@ -422,7 +422,7 @@ export default function RoleManagement({ signer, account }) {
               <button
                 type="button"
                 onClick={() => setActiveAdminView('create')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-md transition-all active:scale-95 cursor-pointer shadow-xs interactive-lift-subtle"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs interactive-lift-subtle"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 <span>Add User</span>
@@ -439,7 +439,7 @@ export default function RoleManagement({ signer, account }) {
                 placeholder="Search by name, email, or wallet..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900/10 rounded-md pl-9 pr-3 py-1.5 text-xs text-slate-900 outline-none transition-all"
+                className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400"
               />
             </div>
 
@@ -451,7 +451,7 @@ export default function RoleManagement({ signer, account }) {
                   onClick={() => setRoleFilter(r)}
                   className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer capitalize ${
                     roleFilter === r
-                      ? 'bg-slate-900 text-white font-semibold'
+                      ? 'bg-slate-900 text-white'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -464,7 +464,7 @@ export default function RoleManagement({ signer, account }) {
           {/* User Table */}
           <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+              <thead className="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
                 <tr>
                   <th className="py-2.5 px-3.5">Practitioner / User</th>
                   <th className="py-2.5 px-3.5">Email (Login ID)</th>
@@ -485,8 +485,8 @@ export default function RoleManagement({ signer, account }) {
                         </div>
                       ) : (
                         <div>
-                          <p className="font-medium">No users found.</p>
-                          <p className="text-[11px] text-slate-400 mt-1">
+                          <p className="font-medium text-slate-600">No users found.</p>
+                          <p className="text-[11px] font-normal text-slate-400 mt-1">
                             Click "Add User" above to create credentials for a Doctor, Patient, or Staff member.
                           </p>
                         </div>
@@ -506,13 +506,13 @@ export default function RoleManagement({ signer, account }) {
 
                     return (
                       <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-3 px-3.5 font-medium text-slate-900 flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 font-bold uppercase text-[11px]">
+                        <td className="py-2.5 px-3.5 font-medium text-slate-900 flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 font-medium uppercase text-[11px]">
                             {(p.full_name || p.email || 'U').charAt(0)}
                           </div>
                           <span>{p.full_name || 'Healthcare User'}</span>
                         </td>
-                        <td className="py-3 px-3.5">
+                        <td className="py-2.5 px-3.5">
                           <div className="flex items-center gap-1.5">
                             <span className="font-mono text-slate-800">{p.email}</span>
                             <button
@@ -529,13 +529,13 @@ export default function RoleManagement({ signer, account }) {
                             </button>
                           </div>
                         </td>
-                        <td className="py-3 px-3.5">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${roleBadge.color}`}>
+                        <td className="py-2.5 px-3.5">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${roleBadge.color}`}>
                             <RoleIcon className="w-3 h-3" />
                             <span>{roleBadge.label}</span>
                           </span>
                         </td>
-                        <td className="py-3 px-3.5">
+                        <td className="py-2.5 px-3.5">
                           {p.wallet_address ? (
                             <div className="flex items-center gap-1 font-mono text-[11px] text-slate-600">
                               <span>{p.wallet_address.slice(0, 6)}...{p.wallet_address.slice(-4)}</span>
@@ -548,13 +548,13 @@ export default function RoleManagement({ signer, account }) {
                               </button>
                             </div>
                           ) : (
-                            <span className="text-[11px] text-slate-400 italic">Not linked</span>
+                            <span className="text-[11px] text-slate-400 italic font-normal">Not linked</span>
                           )}
                         </td>
-                        <td className="py-3 px-3.5 text-slate-500 text-[11px]">
+                        <td className="py-2.5 px-3.5 text-slate-500 text-[11px] font-normal">
                           {p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}
                         </td>
-                        <td className="py-3 px-3.5 text-right">
+                        <td className="py-2.5 px-3.5 text-right">
                           <div className="inline-flex items-center gap-1">
                             {p.wallet_address && (
                               <button
@@ -594,20 +594,20 @@ export default function RoleManagement({ signer, account }) {
       {activeAdminView === 'create' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Create Form */}
-          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-5">
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs space-y-5">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-indigo-600" />
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-slate-700" />
                 <span>Create Healthcare Practitioner Account</span>
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs font-normal text-slate-500 mt-0.5">
                 Generate login credentials for Doctors, Patients, or Medical Staff. The user will use this Email ID and Password to sign in.
               </p>
             </div>
 
             {createMessage.text && (
               <div
-                className={`p-3.5 rounded-lg text-xs flex items-start gap-2.5 ${
+                className={`p-3 rounded-lg text-xs flex items-start gap-2.5 ${
                   createMessage.type === 'error'
                     ? 'bg-rose-50 border border-rose-200 text-rose-800'
                     : 'bg-emerald-50 border border-emerald-200 text-emerald-800'
@@ -625,14 +625,14 @@ export default function RoleManagement({ signer, account }) {
             <form onSubmit={handleCreateUser} className="space-y-4">
               {/* Role Selection */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+                <label className="block text-xs font-medium text-slate-700 mb-1.5">
                   Select User Role
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: 'doctor', title: 'Doctor', icon: Stethoscope, color: 'text-blue-600 border-blue-200 hover:bg-blue-50/50' },
-                    { id: 'medicalStaff', title: 'Medical Staff', icon: Building2, color: 'text-teal-600 border-teal-200 hover:bg-teal-50/50' },
-                    { id: 'patient', title: 'Patient', icon: HeartHandshake, color: 'text-emerald-600 border-emerald-200 hover:bg-emerald-50/50' }
+                    { id: 'doctor', title: 'Doctor', icon: Stethoscope },
+                    { id: 'medicalStaff', title: 'Medical Staff', icon: Building2 },
+                    { id: 'patient', title: 'Patient', icon: HeartHandshake }
                   ].map((r) => {
                     const RIcon = r.icon;
                     const isSelected = newUserRole === r.id;
@@ -641,16 +641,16 @@ export default function RoleManagement({ signer, account }) {
                         key={r.id}
                         type="button"
                         onClick={() => setNewUserRole(r.id)}
-                        className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                        className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
                           isSelected
-                            ? 'border-slate-900 bg-slate-900 text-white shadow-xs font-semibold'
-                            : `bg-white border-slate-200 text-slate-700 ${r.color}`
+                            ? 'border-slate-900 bg-slate-900 text-white shadow-2xs font-medium'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                         }`}
                       >
-                        <RIcon className={`w-4 h-4 ${isSelected ? 'text-white' : ''}`} />
+                        <RIcon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
                         <div>
-                          <div className="text-xs font-bold">{r.title}</div>
-                          <span className={`text-[10px] ${isSelected ? 'text-slate-300' : 'text-slate-400'}`}>
+                          <div className="text-xs font-medium">{r.title}</div>
+                          <span className={`text-[10px] font-normal ${isSelected ? 'text-slate-300' : 'text-slate-400'}`}>
                             {r.id === 'doctor' ? 'Clinical & Certificates' : r.id === 'medicalStaff' ? 'Hospital Archives' : 'Health Records'}
                           </span>
                         </div>
@@ -662,7 +662,7 @@ export default function RoleManagement({ signer, account }) {
 
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Full Name / Practitioner Title
                 </label>
                 <div className="relative">
@@ -673,14 +673,14 @@ export default function RoleManagement({ signer, account }) {
                     placeholder="e.g. Dr. Jane Smith / John Doe"
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
-                    className="w-full bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all"
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
               {/* Email (Login ID) */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Healthcare Email (Login ID)
                 </label>
                 <div className="relative">
@@ -691,7 +691,7 @@ export default function RoleManagement({ signer, account }) {
                     placeholder="e.g. doctor.smith@hospital.org"
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
-                    className="w-full bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all"
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -699,16 +699,16 @@ export default function RoleManagement({ signer, account }) {
               {/* Password & Generator */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                  <label className="block text-xs font-medium text-slate-700">
                     Account Password
                   </label>
                   <button
                     type="button"
                     onClick={generatePassword}
-                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 hover:underline cursor-pointer"
                   >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Generate Strong Password</span>
+                    <Sparkles className="w-3 h-3 text-slate-400" />
+                    <span>Generate Secure Password</span>
                   </button>
                 </div>
                 <div className="relative">
@@ -719,7 +719,7 @@ export default function RoleManagement({ signer, account }) {
                     placeholder="Enter or generate temporary password"
                     value={newUserPassword}
                     onChange={(e) => setNewUserPassword(e.target.value)}
-                    className="w-full bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md pl-9 pr-9 py-2 text-xs text-slate-900 outline-none transition-all font-mono"
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-9 py-2 text-xs text-slate-900 outline-none transition-all font-mono placeholder:text-slate-400"
                   />
                   <button
                     type="button"
@@ -733,7 +733,7 @@ export default function RoleManagement({ signer, account }) {
 
               {/* Optional Wallet Address */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Optional Ethereum Wallet Address (0x...)
                 </label>
                 <div className="relative">
@@ -743,7 +743,7 @@ export default function RoleManagement({ signer, account }) {
                     placeholder="0x... (Optional, for blockchain verification)"
                     value={newUserWallet}
                     onChange={(e) => setNewUserWallet(e.target.value)}
-                    className="w-full bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all font-mono"
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 outline-none transition-all font-mono placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -752,7 +752,7 @@ export default function RoleManagement({ signer, account }) {
               <button
                 type="submit"
                 disabled={isCreatingUser}
-                className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-95 disabled:bg-slate-300 text-white font-medium rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer interactive-lift-subtle"
+                className="w-full py-2 px-4 bg-slate-900 hover:bg-slate-800 active:scale-95 disabled:bg-slate-300 text-white font-medium rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer interactive-lift-subtle"
               >
                 {isCreatingUser ? (
                   <>
@@ -771,33 +771,33 @@ export default function RoleManagement({ signer, account }) {
 
           {/* Right Column: Generated Credentials Card */}
           <div className="space-y-4">
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                <Key className="w-3.5 h-3.5 text-indigo-600" />
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 sm:p-5 space-y-4">
+              <h4 className="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-slate-600" />
                 <span>Credentials Handout Slip</span>
               </h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-xs font-normal text-slate-500 leading-relaxed">
                 When you create an account, copy the credentials below to provide to the doctor, patient, or staff member.
               </p>
 
               {lastCreatedCredentials ? (
-                <div className="bg-white border border-emerald-200 rounded-lg p-4 space-y-3 shadow-2xs">
+                <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3 shadow-2xs">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                    <span className="text-[11px] font-bold text-emerald-700 uppercase">Ready for Use</span>
+                    <span className="text-[11px] font-medium text-emerald-700">Ready for Use</span>
                     <span className="text-[10px] bg-slate-100 font-mono px-2 py-0.5 rounded text-slate-700 capitalize">
                       {lastCreatedCredentials.role}
                     </span>
                   </div>
 
-                  <div className="space-y-1.5 text-xs">
+                  <div className="space-y-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-400 block">Name:</span>
-                      <span className="font-semibold text-slate-900">{lastCreatedCredentials.name}</span>
+                      <span className="text-[10px] font-medium text-slate-400 block">Name</span>
+                      <span className="font-medium text-slate-900">{lastCreatedCredentials.name}</span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-400 block">Login Email ID:</span>
-                      <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded border border-slate-100 font-mono text-[11px]">
+                      <span className="text-[10px] font-medium text-slate-400 block">Login Email ID</span>
+                      <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded border border-slate-100 font-mono text-[11px] mt-0.5">
                         <span>{lastCreatedCredentials.email}</span>
                         <button
                           type="button"
@@ -810,8 +810,8 @@ export default function RoleManagement({ signer, account }) {
                     </div>
 
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-400 block">Password:</span>
-                      <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded border border-slate-100 font-mono text-[11px]">
+                      <span className="text-[10px] font-medium text-slate-400 block">Password</span>
+                      <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded border border-slate-100 font-mono text-[11px] mt-0.5">
                         <span>{lastCreatedCredentials.password}</span>
                         <button
                           type="button"
@@ -830,14 +830,14 @@ export default function RoleManagement({ signer, account }) {
                       const text = `Healthcare Account Credentials\nName: ${lastCreatedCredentials.name}\nRole: ${lastCreatedCredentials.role}\nEmail: ${lastCreatedCredentials.email}\nPassword: ${lastCreatedCredentials.password}`;
                       copyToClipboard(text, 'copy_all');
                     }}
-                    className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95"
+                    className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-2xs"
                   >
-                    {copiedKey === 'copy_all' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedKey === 'copy_all' ? 'Copied Full Slip!' : 'Copy Full Credentials Slip'}</span>
+                    {copiedKey === 'copy_all' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedKey === 'copy_all' ? 'Copied Slip' : 'Copy Credentials Slip'}</span>
                   </button>
                 </div>
               ) : (
-                <div className="bg-white border border-dashed border-slate-200 rounded-lg p-6 text-center text-slate-400 text-xs">
+                <div className="bg-white border border-dashed border-slate-200 rounded-lg p-6 text-center text-slate-400 text-xs font-normal">
                   Fill out the form on the left to generate active login credentials.
                 </div>
               )}
@@ -850,26 +850,26 @@ export default function RoleManagement({ signer, account }) {
       {/* VIEW 3: BLOCKCHAIN RBAC ON-CHAIN PERMISSIONS                              */}
       {/* ========================================================================= */}
       {activeAdminView === 'blockchain' && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-5">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 shadow-2xs space-y-5">
           <div>
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Smart Contract Role-Based Access Control (RBAC)</span>
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs font-normal text-slate-500 mt-0.5">
               Directly grant cryptographic roles on the <code className="font-mono text-slate-700 bg-slate-100 px-1 py-0.5 rounded">BlockDriveAccessControl.sol</code> Ethereum contract.
             </p>
           </div>
 
           {contractStatus && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-md text-xs text-emerald-800 flex items-start gap-2">
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>{contractStatus}</span>
             </div>
           )}
 
           {contractError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-md text-xs text-rose-800 flex items-start gap-2">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
               <span>{contractError}</span>
             </div>
@@ -877,7 +877,7 @@ export default function RoleManagement({ signer, account }) {
 
           <div className="space-y-4 max-w-xl">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1">
+              <label className="block text-xs font-medium text-slate-700 mb-1">
                 Target Ethereum Wallet Address
               </label>
               <input
@@ -885,12 +885,12 @@ export default function RoleManagement({ signer, account }) {
                 placeholder="0x..."
                 value={targetAddress}
                 onChange={(e) => setTargetAddress(e.target.value)}
-                className="w-full bg-white border border-slate-300 hover:border-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 rounded-md px-3 py-2 text-xs text-slate-900 font-mono outline-none transition-all"
+                className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono outline-none transition-all placeholder:text-slate-400"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+              <label className="block text-xs font-medium text-slate-700 mb-1.5">
                 Select On-Chain Role
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -899,10 +899,10 @@ export default function RoleManagement({ signer, account }) {
                     key={r}
                     type="button"
                     onClick={() => setBlockchainRole(r)}
-                    className={`py-2 px-3 rounded-lg border text-xs font-semibold capitalize transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${
                       blockchainRole === r
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
                     {r === 'medicalStaff' ? 'Staff' : r}
@@ -916,7 +916,7 @@ export default function RoleManagement({ signer, account }) {
                 type="button"
                 onClick={() => handleBlockchainOnboard()}
                 disabled={isContractProcessing}
-                className="py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-95 disabled:bg-slate-300 text-white font-medium rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer interactive-lift-subtle"
+                className="py-2 px-4 bg-slate-900 hover:bg-slate-800 active:scale-95 disabled:bg-slate-300 text-white font-medium rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer interactive-lift-subtle"
               >
                 {isContractProcessing ? (
                   <>

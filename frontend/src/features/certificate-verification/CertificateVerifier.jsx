@@ -117,23 +117,23 @@ export default function CertificateVerifier({ initialHash = '' }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Formal Header Card */}
-      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-1">
-          <ShieldCheck className="w-5 h-5 text-slate-700" />
-          <h3 className="text-base font-semibold text-slate-900">Document Verification Portal</h3>
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
+        <div className="flex items-center gap-2 mb-0.5">
+          <ShieldCheck className="w-4.5 h-4.5 text-slate-700" />
+          <h3 className="text-sm font-semibold text-slate-900">Document Verification Portal</h3>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 font-normal">
           Public, trustless verification of document integrity against on-chain records. No wallet required.
         </p>
       </div>
 
       {/* Main Verification Input Section */}
-      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs hover:border-slate-300 transition-colors space-y-5">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs space-y-4">
         {/* Upload File Section */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+          <label className="block text-[11px] font-medium text-slate-600 uppercase tracking-wider mb-1">
             1. Document File Verification
           </label>
           <div className="group border border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50/90 rounded-lg p-6 text-center cursor-pointer relative interactive-lift-subtle">

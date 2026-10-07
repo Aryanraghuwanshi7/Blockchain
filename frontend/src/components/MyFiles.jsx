@@ -464,11 +464,11 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-5 gap-3">
+    <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3.5 mb-4 gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">Registered Documents & Access Control</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h3 className="text-sm font-semibold text-slate-900">Registered Documents & Access Control</h3>
+          <p className="text-xs text-slate-500 mt-0.5 font-normal">
             Manage your on-chain records and authorize or revoke recipient decryption access.
           </p>
         </div>
@@ -479,7 +479,7 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
               setActiveRecipients([]);
               setAuthStatus('');
             }}
-            className="text-xs px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-medium rounded-md transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="text-xs px-3 py-1.5 bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-medium rounded-md transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
           >
             <Users className="w-3.5 h-3.5" />
             <span>Grant Access</span>
@@ -490,10 +490,10 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
           <button
             onClick={loadFiles}
             disabled={loading}
-            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 rounded-md border border-slate-200 font-medium transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            className="text-xs px-2.5 py-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 rounded-md border border-slate-200 font-medium transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-            {loading ? 'Refreshing...' : 'Refresh'}
+            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
           </button>
         </div>
       </div>
