@@ -34,7 +34,7 @@
     padding: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
     background-color: #f9fafb;
-    color: #000000 !important;
+    color: #000000;
     min-height: 100vh;
   }
 
@@ -48,7 +48,7 @@
     color: #000000;
   }
 
-  /* Neutralize all colored text classes to pure black */
+  /* Neutralize colored text classes to pure black */
   [class*="text-gray-"],
   [class*="text-slate-"],
   [class*="text-zinc-"],
@@ -69,16 +69,24 @@
   [class*="text-fuchsia-"],
   [class*="text-pink-"],
   [class*="text-muted-"] {
+    color: #000000;
+  }
+
+  .text-black {
     color: #000000 !important;
   }
 
-  /* Explicit White text rules for dark backgrounds/buttons */
+  /* Explicit White text rules for dark backgrounds and buttons */
   .text-white,
   .text-white *,
   [class*="text-white"],
   [class*="text-white"] *,
   .bg-black,
   .bg-black *,
+  .bg-black span,
+  .bg-black p,
+  .bg-black div,
+  .bg-black a,
   .bg-slate-900,
   .bg-slate-900 *,
   .bg-gray-900,
@@ -86,16 +94,44 @@
   .bg-blue-600,
   .bg-blue-600 *,
   .bg-emerald-600,
-  .bg-emerald-600 * {
+  .bg-emerald-600 *,
+  button.bg-black,
+  button.bg-black *,
+  button.bg-gray-900,
+  button.bg-gray-900 *,
+  button.bg-slate-900,
+  button.bg-slate-900 * {
     color: #ffffff !important;
   }
 
-  /* Except when child explicitly requests black text inside a dark container */
-  .text-black,
-  .text-black *,
-  [class*="text-black"],
-  [class*="text-black"] * {
-    color: #000000 !important;
+  /* Light elements nested inside dark containers can still have black text if specified */
+  .bg-white,
+  .bg-white *,
+  .bg-gray-50,
+  .bg-gray-50 *,
+  .bg-gray-100,
+  .bg-gray-100 *,
+  .bg-slate-50,
+  .bg-slate-50 *,
+  .bg-slate-100,
+  .bg-slate-100 * {
+    color: #000000;
+  }
+
+  /* Buttons with black backgrounds inside white containers must still have white text */
+  .bg-white .bg-black,
+  .bg-white .bg-black *,
+  .bg-white button.bg-black,
+  .bg-white button.bg-black *,
+  .bg-gray-50 .bg-black,
+  .bg-gray-50 .bg-black *,
+  .bg-gray-50 button.bg-black,
+  .bg-gray-50 button.bg-black *,
+  .bg-gray-100 .bg-black,
+  .bg-gray-100 .bg-black *,
+  .bg-gray-100 button.bg-black,
+  .bg-gray-100 button.bg-black * {
+    color: #ffffff !important;
   }
 
   ::placeholder {
@@ -119,7 +155,7 @@
   select,
   textarea {
     font-size: 0.875rem;
-    color: #000000 !important;
+    color: #000000;
   }
 
   input[type="text"]:focus,
@@ -131,4 +167,3 @@
     border-color: #000000;
   }
 }
-
