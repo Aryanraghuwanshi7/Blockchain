@@ -40,6 +40,9 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
     if (!account) return;
     setLoading(true);
     try {
+      const deletedFiles = new Set(
+        JSON.parse(localStorage.getItem('blockdrive_deleted_files') || '[]').map((id) => id.toLowerCase())
+      );
       const cachedMeta = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
       let onChainIds = [];
 
@@ -60,7 +63,7 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
       // Add on-chain IDs (reversed so newest are first)
       for (const id of [...onChainIds].reverse()) {
         const lower = id.toLowerCase();
-        if (!uniqueLower.has(lower)) {
+        if (!uniqueLower.has(lower) && !deletedFiles.has(lower)) {
           uniqueLower.add(lower);
           uniqueIds.push(id);
         }
@@ -73,6 +76,7 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
         const lower = id.toLowerCase();
         if (
           !uniqueLower.has(lower) &&
+          !deletedFiles.has(lower) &&
           item &&
           (!item.owner || item.owner.toLowerCase() === account.toLowerCase())
         ) {
@@ -132,6 +136,42 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteFile = (fileId) => {
+    if (!window.confirm('Remove this record from your document list?')) return;
+    const idLower = fileId.toLowerCase();
+    const deleted = JSON.parse(localStorage.getItem('blockdrive_deleted_files') || '[]');
+    if (!deleted.includes(idLower)) {
+      deleted.push(idLower);
+      localStorage.setItem('blockdrive_deleted_files', JSON.stringify(deleted));
+    }
+    const cachedMeta = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
+    delete cachedMeta[idLower];
+    delete cachedMeta[fileId];
+    localStorage.setItem('blockdrive_files_metadata', JSON.stringify(cachedMeta));
+
+    const fileKeys = JSON.parse(localStorage.getItem('blockdrive_file_aes_keys') || '{}');
+    delete fileKeys[idLower];
+    delete fileKeys[fileId];
+    localStorage.setItem('blockdrive_file_aes_keys', JSON.stringify(fileKeys));
+
+    setFiles((prev) => prev.filter((id) => id.toLowerCase() !== idLower));
+  };
+
+  const handleClearAllFiles = () => {
+    if (!window.confirm('Are you sure you want to clear all file records from your list?')) return;
+    const deleted = JSON.parse(localStorage.getItem('blockdrive_deleted_files') || '[]');
+    files.forEach((id) => {
+      if (!deleted.includes(id.toLowerCase())) {
+        deleted.push(id.toLowerCase());
+      }
+    });
+    localStorage.setItem('blockdrive_deleted_files', JSON.stringify(deleted));
+    localStorage.removeItem('blockdrive_files_metadata');
+    localStorage.removeItem('blockdrive_file_aes_keys');
+    setFiles([]);
+    setFileDetails({});
   };
 
   const handleDecryptAndDownload = async (fileId) => {
@@ -464,6 +504,15 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
           >
             <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
           </button>
+          {files.length > 0 && (
+            <button
+              onClick={handleClearAllFiles}
+              className="text-xs px-2.5 py-1.5 bg-white hover:bg-red-50 text-black rounded-md border border-gray-300 font-medium cursor-pointer"
+              title="Clear all records from your view"
+            >
+              <span>Clear All</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -598,6 +647,14 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
                     className="px-3 py-1.5 bg-white hover:bg-gray-50 text-black border border-gray-300 rounded-md text-xs font-medium cursor-pointer"
                   >
                     <span>Manage Access</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteFile(fileId)}
+                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-black border border-gray-300 rounded-md text-xs font-medium cursor-pointer"
+                    title="Remove from document list"
+                  >
+                    <span>Delete</span>
                   </button>
                 </div>
               </div>
