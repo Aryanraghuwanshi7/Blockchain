@@ -19,8 +19,6 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
   const [patientsList, setPatientsList] = useState([]);
   const [loadingPatients, setLoadingPatients] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [customPatientWallet, setCustomPatientWallet] = useState('');
-  const [showManualInput, setShowManualInput] = useState(false);
 
   // Load real existing patients from database & local directory
   const fetchPatients = useCallback(async () => {
@@ -28,16 +26,17 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
     try {
       let allPatients = [];
 
-      // 1. Fetch real profiles from Supabase
+      // 1. Fetch real profiles from Supabase (all users or patients)
       try {
         const { data, error } = await supabase
           .from('profiles')
           .select('id, full_name, email, role, wallet_address, created_at')
-          .eq('role', 'patient')
           .order('created_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
-          allPatients = [...data];
+          // Filter patients or include users who aren't doctors/admins
+          const filtered = data.filter((p) => p.role === 'patient' || !p.role || p.role === 'user');
+          allPatients = filtered.length > 0 ? filtered : data;
         }
       } catch (dbErr) {
         console.warn('Supabase profiles query note:', dbErr);
@@ -46,10 +45,19 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
       // 2. Fetch from local admin directory
       try {
         const localUsers = JSON.parse(localStorage.getItem('blockdrive_admin_profiles') || '[]');
-        const localPatients = localUsers.filter((u) => u.role === 'patient');
-        for (const lp of localPatients) {
+        for (const lp of localUsers) {
           if (!allPatients.some((p) => p.email?.toLowerCase() === lp.email?.toLowerCase())) {
             allPatients.push(lp);
+          }
+        }
+      } catch {}
+
+      // 3. Fetch from saved patient registry
+      try {
+        const savedRegistry = JSON.parse(localStorage.getItem('blockdrive_patient_registry') || '[]');
+        for (const sp of savedRegistry) {
+          if (!allPatients.some((p) => p.email?.toLowerCase() === sp.email?.toLowerCase())) {
+            allPatients.push(sp);
           }
         }
       } catch {}
@@ -75,6 +83,36 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
     return nameMatch || emailMatch || walletMatch;
   });
 
+  const handleSelectPatient = (patientObj) => {
+    setSelectedPatient(patientObj);
+    // Save to patient registry so it persists in the list
+    try {
+      const savedRegistry = JSON.parse(localStorage.getItem('blockdrive_patient_registry') || '[]');
+      if (!savedRegistry.some((p) => p.email?.toLowerCase() === patientObj.email?.toLowerCase())) {
+        savedRegistry.push(patientObj);
+        localStorage.setItem('blockdrive_patient_registry', JSON.stringify(savedRegistry));
+      }
+    } catch {}
+  };
+
+  const handleQuickSelectTypedPatient = () => {
+    const query = patientSearchQuery.trim();
+    if (!query) return;
+
+    const isEthAddress = query.startsWith('0x') && query.length >= 40;
+    const isEmail = query.includes('@');
+
+    const newPatient = {
+      id: `p_${Date.now()}`,
+      full_name: isEmail ? query.split('@')[0] : (isEthAddress ? `${query.slice(0, 6)}...${query.slice(-4)}` : query),
+      email: isEmail ? query : `${query.toLowerCase().replace(/\s+/g, '')}@patient.blockdrive`,
+      wallet_address: isEthAddress ? query : (isEmail ? '' : ''),
+      role: 'patient'
+    };
+
+    handleSelectPatient(newPatient);
+  };
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
@@ -90,12 +128,12 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
     }
     if (!file || !userKeys) return;
 
-    const targetPatientAddress = selectedPatient?.wallet_address || (uploadMode === 'patient' ? customPatientWallet.trim() : null);
-
-    if (uploadMode === 'patient' && !selectedPatient && !targetPatientAddress) {
-      setStatus('Please select a patient from the list or enter a patient wallet address.');
+    if (uploadMode === 'patient' && !selectedPatient) {
+      setStatus('Please select a patient from the list or enter a patient email/address.');
       return;
     }
+
+    const targetPatientAddress = selectedPatient?.wallet_address || null;
 
     setIsProcessing(true);
     setStatus('Encrypting file binary client-side (AES-256-GCM)...');
@@ -118,7 +156,7 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
       const ipfsCid = await uploadToIPFS(packedBuffer, file.name);
 
       // 4. Wrap AES Key for Owner (Doctor) using client ECDH key
-      setStatus('Wrapping AES encryption key with ECDH keys...');
+      setStatus('Wrapping AES encryption key for authorized parties...');
       const wrappedKeyBytes = await wrapKeyForRecipient(aesKey, userKeys.publicKeyJWK);
 
       // 5. Generate unique FileId
@@ -139,8 +177,8 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
         assignedPatient: selectedPatient ? {
           name: selectedPatient.full_name || selectedPatient.email,
           email: selectedPatient.email,
-          wallet_address: targetPatientAddress,
-        } : (targetPatientAddress ? { wallet_address: targetPatientAddress } : null),
+          wallet_address: targetPatientAddress || '',
+        } : null,
         sharedWith: targetPatientAddress ? [targetPatientAddress.toLowerCase()] : []
       };
 
@@ -238,7 +276,7 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
     );
   }
 
-  const isReadyToAddDocument = uploadMode === 'self' || selectedPatient !== null || (customPatientWallet.trim().length > 0);
+  const isReadyToAddDocument = uploadMode === 'self' || selectedPatient !== null;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6 text-black space-y-5">
@@ -249,7 +287,7 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
         </p>
       </div>
 
-      {/* Target Mode Selector */}
+      {/* Step 1: Target Destination Selector */}
       <div className="space-y-1.5">
         <label className="block text-xs font-semibold text-black uppercase tracking-wider">
           Step 1: Choose Upload Destination
@@ -304,7 +342,6 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
                   type="button"
                   onClick={() => {
                     setSelectedPatient(null);
-                    setCustomPatientWallet('');
                     setFile(null);
                   }}
                   className="text-xs text-black font-medium border border-gray-300 bg-white px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer"
@@ -316,9 +353,9 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
           </div>
 
           {selectedPatient ? (
-            <div className="bg-white border border-gray-300 rounded-md p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-black">
+            <div className="bg-white border border-gray-300 rounded-md p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-black">
               <div>
-                <span className="text-sm font-bold text-black block">{selectedPatient.full_name || 'Patient'}</span>
+                <span className="text-sm font-bold text-black block">{selectedPatient.full_name || selectedPatient.email}</span>
                 <span className="text-xs text-black opacity-75 block">{selectedPatient.email}</span>
                 {selectedPatient.wallet_address ? (
                   <code className="text-xs font-mono text-black block opacity-80 mt-1">
@@ -326,23 +363,61 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
                   </code>
                 ) : (
                   <span className="text-[11px] text-black opacity-60 block mt-0.5">
-                    No wallet linked (access will be assigned via patient credentials)
+                    Account ID: {selectedPatient.email}
                   </span>
                 )}
               </div>
-              <span className="text-xs font-semibold bg-gray-100 px-2.5 py-1 rounded border border-gray-200 self-start sm:self-center">
-                ✓ Ready for Document
+              <span className="text-xs font-semibold bg-gray-100 px-3 py-1.5 rounded border border-gray-200 self-start sm:self-center">
+                ✓ Patient Selected
               </span>
             </div>
           ) : (
             <div className="space-y-2.5">
-              <input
-                type="text"
-                placeholder="Search patient by name, email, or wallet address..."
-                value={patientSearchQuery}
-                onChange={(e) => setPatientSearchQuery(e.target.value)}
-                className="w-full bg-white border border-gray-300 focus:border-black rounded px-3 py-2 text-xs text-black outline-none"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Type patient name, email (e.g. aryannot0p07@gmail.com), or wallet..."
+                  value={patientSearchQuery}
+                  onChange={(e) => setPatientSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (filteredPatients.length === 1) {
+                        handleSelectPatient(filteredPatients[0]);
+                      } else if (patientSearchQuery.trim()) {
+                        handleQuickSelectTypedPatient();
+                      }
+                    }
+                  }}
+                  className="flex-1 bg-white border border-gray-300 focus:border-black rounded px-3 py-2 text-xs text-black outline-none"
+                />
+                {patientSearchQuery.trim() && (
+                  <button
+                    type="button"
+                    onClick={handleQuickSelectTypedPatient}
+                    className="px-3 py-2 bg-black hover:bg-gray-900 text-white rounded text-xs font-medium cursor-pointer"
+                  >
+                    Select
+                  </button>
+                )}
+              </div>
+
+              {/* Direct Quick-Select Option for Typed Email or Identifier */}
+              {patientSearchQuery.trim() && !filteredPatients.some(p => p.email?.toLowerCase() === patientSearchQuery.trim().toLowerCase()) && (
+                <div className="p-2.5 bg-white border border-gray-300 rounded flex items-center justify-between text-xs text-black">
+                  <div>
+                    <span className="font-semibold block">Assign to: {patientSearchQuery.trim()}</span>
+                    <span className="text-[11px] opacity-70 block">Target Patient Email / Identifier</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleQuickSelectTypedPatient}
+                    className="px-3 py-1 bg-black text-white rounded text-xs font-medium cursor-pointer"
+                  >
+                    Select This Patient
+                  </button>
+                </div>
+              )}
 
               {loadingPatients ? (
                 <div className="text-xs text-black p-3 bg-white border border-gray-200 rounded">
@@ -359,19 +434,14 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
                         <span className="font-bold text-sm block text-black">{p.full_name || p.email}</span>
                         <span className="text-black opacity-70 block">{p.email}</span>
                         {p.wallet_address ? (
-                          <code className="font-mono text-[11px] opacity-70 block truncate mt-0.5">
-                            Wallet: {p.wallet_address}
+                          <code className="font-mono text-[11px] opacity-70 block truncate max-w-xs sm:max-w-sm">
+                            {p.wallet_address}
                           </code>
-                        ) : (
-                          <span className="text-[10px] text-black opacity-50 block">No on-chain wallet</span>
-                        )}
+                        ) : null}
                       </div>
                       <button
                         type="button"
-                        onClick={() => {
-                          setSelectedPatient(p);
-                          setCustomPatientWallet(p.wallet_address || '');
-                        }}
+                        onClick={() => handleSelectPatient(p)}
                         className="px-3 py-1.5 bg-black hover:bg-gray-900 text-white rounded text-xs font-medium shrink-0 cursor-pointer"
                       >
                         Select Patient
@@ -380,44 +450,8 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-white border border-gray-200 rounded text-xs text-black space-y-2">
-                  <p className="font-medium">No registered patients found matching your search.</p>
-                  <p className="opacity-70">You can create patient accounts in the Hospital Admin tab, or enter a patient wallet address below:</p>
-                  <button
-                    type="button"
-                    onClick={() => setShowManualInput(!showManualInput)}
-                    className="text-xs text-black underline font-medium cursor-pointer"
-                  >
-                    {showManualInput ? 'Hide Manual Input' : 'Enter Patient Wallet Address Manually'}
-                  </button>
-
-                  {showManualInput && (
-                    <div className="pt-2 flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Patient Ethereum Wallet (0x...)"
-                        value={customPatientWallet}
-                        onChange={(e) => setCustomPatientWallet(e.target.value)}
-                        className="flex-1 bg-white border border-gray-300 focus:border-black rounded px-2.5 py-1.5 text-xs font-mono text-black outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (customPatientWallet.trim()) {
-                            setSelectedPatient({
-                              full_name: 'Patient Wallet',
-                              email: customPatientWallet.trim(),
-                              wallet_address: customPatientWallet.trim()
-                            });
-                          }
-                        }}
-                        disabled={!customPatientWallet.trim()}
-                        className="px-3 py-1.5 bg-black hover:bg-gray-900 disabled:bg-gray-200 text-white rounded text-xs font-medium cursor-pointer"
-                      >
-                        Confirm
-                      </button>
-                    </div>
-                  )}
+                <div className="p-3 bg-white border border-gray-200 rounded text-xs text-black">
+                  <span className="opacity-75">No existing patients in directory. Type any patient email above and click <strong>Select</strong>.</span>
                 </div>
               )}
             </div>
@@ -425,12 +459,12 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
         </div>
       )}
 
-      {/* Step 2: Document Selection (Shown after selecting patient or in self mode) */}
+      {/* Step 2: Document Selection (Shown ONLY AFTER selecting a patient or in self mode) */}
       {isReadyToAddDocument && (
         <div className="space-y-4 pt-2 border-t border-gray-100">
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-black uppercase tracking-wider">
-              Step 2: Add Document File {selectedPatient ? `for ${selectedPatient.full_name || 'Patient'}` : ''}
+              Step 2: Add Document File {selectedPatient ? `for ${selectedPatient.full_name || selectedPatient.email}` : ''}
             </label>
             <div className="border border-dashed border-gray-300 hover:border-black bg-gray-50/50 hover:bg-gray-50 rounded-lg p-6 sm:p-7 text-center cursor-pointer relative">
               <input
@@ -489,7 +523,7 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
             ) : !file ? (
               <span>Select a Document First</span>
             ) : selectedPatient ? (
-              <span>Encrypt & Assign Exclusively to {selectedPatient.full_name || 'Selected Patient'}</span>
+              <span>Encrypt & Assign Exclusively to {selectedPatient.full_name || selectedPatient.email}</span>
             ) : (
               <span>Encrypt & Store in Doctor Vault</span>
             )}
