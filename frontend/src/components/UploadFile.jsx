@@ -26,7 +26,7 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
     try {
       let allPatients = [];
 
-      // 1. Fetch real profiles from Supabase (all users or patients)
+      // 1. Fetch real profiles from Supabase (strictly role === 'patient')
       try {
         const { data, error } = await supabase
           .from('profiles')
@@ -34,29 +34,34 @@ export default function UploadFile({ signer, userKeys, onFileUploaded, onConnect
           .order('created_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
-          // Filter patients or include users who aren't doctors/admins
-          const filtered = data.filter((p) => p.role === 'patient' || !p.role || p.role === 'user');
-          allPatients = filtered.length > 0 ? filtered : data;
+          // Strictly include ONLY patients (exclude doctors, medicalStaff, admin)
+          const patientsOnly = data.filter((p) => {
+            const r = (p.role || '').toLowerCase();
+            return r === 'patient';
+          });
+          allPatients = patientsOnly;
         }
       } catch (dbErr) {
         console.warn('Supabase profiles query note:', dbErr);
       }
 
-      // 2. Fetch from local admin directory
+      // 2. Fetch from local admin directory (strictly role === 'patient')
       try {
         const localUsers = JSON.parse(localStorage.getItem('blockdrive_admin_profiles') || '[]');
         for (const lp of localUsers) {
-          if (!allPatients.some((p) => p.email?.toLowerCase() === lp.email?.toLowerCase())) {
+          const r = (lp.role || '').toLowerCase();
+          if (r === 'patient' && !allPatients.some((p) => p.email?.toLowerCase() === lp.email?.toLowerCase())) {
             allPatients.push(lp);
           }
         }
       } catch {}
 
-      // 3. Fetch from saved patient registry
+      // 3. Fetch from saved patient registry (strictly role === 'patient')
       try {
         const savedRegistry = JSON.parse(localStorage.getItem('blockdrive_patient_registry') || '[]');
         for (const sp of savedRegistry) {
-          if (!allPatients.some((p) => p.email?.toLowerCase() === sp.email?.toLowerCase())) {
+          const r = (sp.role || '').toLowerCase();
+          if ((!r || r === 'patient') && !allPatients.some((p) => p.email?.toLowerCase() === sp.email?.toLowerCase())) {
             allPatients.push(sp);
           }
         }
