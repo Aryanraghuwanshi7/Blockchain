@@ -48,6 +48,20 @@ export default function SharedFiles({ signer, account, userKeys }) {
       const cached = JSON.parse(localStorage.getItem('blockdrive_files_metadata') || '{}');
       const details = {};
 
+      // Also include any locally indexed files assigned specifically to this patient account
+      const cleanAccount = account.toLowerCase();
+      for (const key of Object.keys(cached)) {
+        const item = cached[key];
+        if (!item) continue;
+        const assignedWallet = item.assignedPatient?.wallet_address?.toLowerCase();
+        const isShared = (item.sharedWith || []).some(w => w.toLowerCase() === cleanAccount);
+        if ((assignedWallet === cleanAccount || isShared) && !fileIds.includes(item.fileId || key)) {
+          fileIds.push(item.fileId || key);
+        }
+      }
+
+      setSharedFileIds([...fileIds]);
+
       for (const id of fileIds) {
         const idLower = id.toLowerCase();
         let meta = cached[idLower] || cached[id] || null;

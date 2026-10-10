@@ -558,6 +558,14 @@ export default function MyFiles({ signer, account, userKeys, onNavigateTab }) {
                     <span>
                       {uploadDate}
                     </span>
+                    {meta.assignedPatient && (
+                      <>
+                        <span>•</span>
+                        <span className="bg-gray-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-black">
+                          Patient: {meta.assignedPatient.name || meta.assignedPatient.email || meta.assignedPatient.wallet_address}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 mt-2">
