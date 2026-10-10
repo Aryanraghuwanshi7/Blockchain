@@ -190,13 +190,7 @@ export default function RoleLogin({
 
           {/* Feedback Message */}
           {message.text && (
-            <div
-              className={`p-3 rounded text-xs ${
-                message.type === 'error'
-                  ? 'bg-red-50 border border-red-200 text-black'
-                  : 'bg-emerald-50 border border-emerald-200 text-black'
-              }`}
-            >
+            <div className="p-3 rounded text-xs bg-gray-50 border border-gray-300 text-black">
               <span>{message.text}</span>
             </div>
           )}

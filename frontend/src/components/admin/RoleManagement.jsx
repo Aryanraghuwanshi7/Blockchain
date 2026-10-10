@@ -537,13 +537,7 @@ export default function RoleManagement({ signer, account }) {
             </div>
 
             {createMessage.text && (
-              <div
-                className={`p-3 rounded-lg text-xs ${
-                  createMessage.type === 'error'
-                    ? 'bg-red-50 border border-red-200 text-black'
-                    : 'bg-emerald-50 border border-emerald-200 text-black'
-                }`}
-              >
+              <div className="p-3 rounded-lg text-xs bg-gray-50 border border-gray-300 text-black">
                 <span>{createMessage.text}</span>
               </div>
             )}
@@ -762,7 +756,7 @@ export default function RoleManagement({ signer, account }) {
           )}
 
           {contractError && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-black">
+            <div className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-xs text-black">
               <span>{contractError}</span>
             </div>
           )}

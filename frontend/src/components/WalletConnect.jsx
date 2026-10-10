@@ -94,7 +94,7 @@ export default function WalletConnect({
       </div>
 
       {error && (
-        <div className="w-full mt-2 p-2 bg-red-50 border border-red-200 text-black text-xs rounded">
+        <div className="w-full mt-2 p-2 bg-gray-50 border border-gray-300 text-black text-xs rounded">
           <span>{error}</span>
         </div>
       )}
