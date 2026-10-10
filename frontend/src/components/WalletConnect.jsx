@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
 import { useRole } from '../context/RoleContext';
-import {
-  onboardDoctor,
-  onboardMedicalStaff,
-  onboardPatient,
-  revokeHealthcareRole,
-  isLocalNodeAlive
-} from '../utils/contracts';
+
+export function formatRoleName(roleKey) {
+  if (!roleKey) return 'Unregistered';
+  const lower = roleKey.toLowerCase();
+  if (lower === 'doctor') return 'Doctor';
+  if (lower === 'medicalstaff' || lower === 'staff') return 'Medical Staff';
+  if (lower === 'patient') return 'Patient';
+  if (lower === 'admin' || lower === 'administrator') return 'Administrator';
+  return roleKey.charAt(0).toUpperCase() + roleKey.slice(1);
+}
 
 export default function WalletConnect({
   account,
@@ -15,12 +17,14 @@ export default function WalletConnect({
   isConnecting,
   error,
   chainId,
-  onSwitchNetwork
+  onSwitchNetwork,
+  currentRole,
 }) {
   const isLocalOrSepolia = chainId === "0x7a69" || chainId === "0xaa36a7" || chainId === "31337" || chainId === "11155111";
-  const { role, refreshRole } = useRole();
-  const [isSwitching, setIsSwitching] = useState(false);
+  const { role } = useRole();
   const [copied, setCopied] = useState(false);
+
+  const displayRole = formatRoleName(currentRole || (role !== 'unregistered' ? role : '') || role || 'doctor');
 
   const handleCopy = () => {
     if (!account) return;
@@ -32,53 +36,6 @@ export default function WalletConnect({
   const formatAddress = (addr) => {
     if (!addr) return '';
     return `${addr.slice(0, 8)}...${addr.slice(-6)}`;
-  };
-
-  const handleSwitchRole = async (targetRole) => {
-    if (!account) return;
-    setIsSwitching(true);
-    const cleanAccount = account.toLowerCase();
-
-    localStorage.setItem(`blockdrive_role_override_${cleanAccount}`, targetRole);
-
-    if (refreshRole) {
-      await refreshRole();
-    }
-
-    try {
-      const isAlive = await isLocalNodeAlive();
-      if (isAlive) {
-        const localProvider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
-        const adminSigner = new ethers.Wallet(
-          "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-          localProvider
-        );
-      
-        try {
-          await adminSigner.sendTransaction({
-            to: account,
-            value: ethers.parseEther("2.0")
-          });
-        } catch {}
-
-        try { await revokeHealthcareRole(adminSigner, account, 'patient'); } catch {}
-        try { await revokeHealthcareRole(adminSigner, account, 'doctor'); } catch {}
-        try { await revokeHealthcareRole(adminSigner, account, 'medicalStaff'); } catch {}
-
-        if (targetRole === 'doctor') {
-          await onboardDoctor(adminSigner, account);
-        } else if (targetRole === 'medicalStaff') {
-          await onboardMedicalStaff(adminSigner, account);
-        } else if (targetRole === 'patient') {
-          await onboardPatient(adminSigner, account);
-        }
-      }
-    } catch (err) {
-      console.warn("Role update note:", err.message);
-    } finally {
-      if (refreshRole) await refreshRole();
-      setIsSwitching(false);
-    }
   };
 
   return (
@@ -94,7 +51,7 @@ export default function WalletConnect({
           <div className="text-xs text-black mt-0.5">
             {account ? (
               <div className="flex items-center gap-2 flex-wrap text-xs">
-                <span className="text-black bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
+                <span className="text-black bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200 font-mono">
                   {formatAddress(account)}
                 </span>
                 <button
@@ -102,10 +59,10 @@ export default function WalletConnect({
                   title="Copy address"
                   className="text-black hover:underline text-[11px] px-1 py-0.5 border border-gray-200 rounded bg-white cursor-pointer"
                 >
-                  {copied ? 'Copied' : 'Copy'}
+                  {copied ? '[Copied]' : '[Copy]'}
                 </button>
-                <span className="text-xs text-black bg-gray-100 px-2 py-0.5 rounded capitalize">
-                  {role}
+                <span className="text-xs text-black bg-gray-100 px-2 py-0.5 rounded font-medium">
+                  {displayRole}
                 </span>
               </div>
             ) : (
@@ -116,26 +73,6 @@ export default function WalletConnect({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
-        {account && (
-          <div className="flex items-center gap-1 bg-gray-100 border border-gray-200 rounded p-0.5 text-xs">
-            <span className="text-black px-1 hidden sm:inline">Role:</span>
-            {['doctor', 'medicalStaff', 'patient'].map((r) => (
-              <button
-                key={r}
-                onClick={() => handleSwitchRole(r)}
-                disabled={isSwitching || role === r}
-                className={`px-2 py-0.5 rounded text-xs cursor-pointer capitalize ${
-                  role === r
-                    ? 'bg-white text-black font-semibold border border-gray-300 shadow-xs'
-                    : 'text-black hover:bg-gray-200/50'
-                }`}
-              >
-                {r === 'medicalStaff' ? 'Staff' : r}
-              </button>
-            ))}
-          </div>
-        )}
-
         {account && !isLocalOrSepolia && (
           <button
             onClick={onSwitchNetwork}
@@ -145,14 +82,7 @@ export default function WalletConnect({
           </button>
         )}
 
-        {account ? (
-          <button
-            onClick={onConnect}
-            className="px-2.5 py-1 bg-white hover:bg-gray-50 text-black border border-gray-300 rounded text-xs font-medium flex items-center cursor-pointer"
-          >
-            <span>Switch Account</span>
-          </button>
-        ) : (
+        {!account && (
           <button
             onClick={onConnect}
             disabled={isConnecting}
@@ -171,5 +101,3 @@ export default function WalletConnect({
     </div>
   );
 }
-
-

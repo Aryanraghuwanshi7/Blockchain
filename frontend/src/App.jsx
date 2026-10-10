@@ -285,6 +285,7 @@ function AppContent({
           error={error}
           chainId={chainId}
           onSwitchNetwork={switchToLocalhostNetwork}
+          currentRole={activeRole}
         />
 
         {/* Page Breadcrumb */}
